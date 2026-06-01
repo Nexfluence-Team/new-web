@@ -153,10 +153,10 @@ function Btn({ href, onClick, variant, children, style }: BtnProps) {
 // Every other section matches this exactly.
 // ─────────────────────────────────────────────
 const NAV_LINKS = [
-  { label: "Marketplace", href: "#marketplace" },
-  { label: "Creators",    href: "#creators"    },
+  { label: "Marketplace", href: "/marketplace" },
+  { label: "Creators",    href: "/creators"    },
   { label: "About Us",    href: "/about"       },
-  { label: "Growth",      href: "#growth"      },
+  { label: "Growth",      href: "/progress"      },
 ];
 
 function Header() {
@@ -208,13 +208,13 @@ function Header() {
         <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center" }}>
           {!isMobile && (
             <>
-              <Btn href="#how-it-works" variant="ghost" style={{ padding: "10px 20px", fontSize: 13 }}>For Creators</Btn>
-              <Btn href="#contact" variant="primary" style={{ padding: "10px 20px", fontSize: 13 }}>For Brands</Btn>
+              {/* <Btn href="#how-it-works" variant="ghost" style={{ padding: "10px 20px", fontSize: 13 }}>For Creators</Btn> */}
+              <Btn href="/contact" variant="primary" style={{ padding: "10px 20px", fontSize: 13 }}>Contact Us</Btn>
             </>
           )}
           {isMobile && (
             <>
-              <Btn href="#contact" variant="primary" style={{ padding: "9px 14px", fontSize: 12 }}>For Brands</Btn>
+              <Btn href="/contact" variant="primary" style={{ padding: "9px 14px", fontSize: 12 }}>Contact Us</Btn>
               <button onClick={() => setMenuOpen(!menuOpen)} style={{
                 background: "none", border: "none", cursor: "pointer",
                 padding: 4, color: C.ink, fontSize: 20,
@@ -335,8 +335,8 @@ function Hero() {
           </p>
 
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <Btn href="#contact" variant="primary">Start a Campaign →</Btn>
-            <Btn href="#how-it-works" variant="ghost">Join as Creator</Btn>
+            <Btn href="/contact" variant="primary">Start a Campaign →</Btn>
+            <Btn href="/contact" variant="ghost">Join as Creator</Btn>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 36, flexWrap: "wrap" }}>

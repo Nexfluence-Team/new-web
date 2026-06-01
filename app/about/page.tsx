@@ -1,29 +1,32 @@
 "use client";
 
 /**
- * app/zone/about/page.tsx
+ * app/about/page.tsx
  * Nexfluence — About Page
  *
- * Sections:
- *  1. Page Hero
- *  2. Origin Story
- *  3. Mission Statement
- *  4. Core Values
- *  5. The Team
- *  6. What We're Building  (platform vision)
- *  7. Company Timeline
- *  8. Join the Journey  (CTA)
- *  9. Footer
+ * Follows the exact same design language, colours, alignment and
+ * layout constraints as the company homepage (zone/page.tsx).
  *
- * Shares the same design tokens as homepage.
- * Globals needed: .dot-live, .marquee-track, @keyframes (same as homepage).
+ * Sections:
+ *  1. Founder hero
+ *  2. Our Story (bento grid)
+ *  3. Team
+ *  4. Events & Community
+ *  5. Sponsors
+ *  6. Final CTA
+ *  7. Footer
+ *
+ * CSS REQUIRED IN globals.css (same as homepage):
+ *   .dot-live { … }
+ *   .marquee-track { … }
+ *   @keyframes dot-pulse, marquee-left { … }
  */
 
 import Image from "next/image";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 // ─────────────────────────────────────────────
-// RESPONSIVE HOOK
+// RESPONSIVE HOOK (shared utility)
 // ─────────────────────────────────────────────
 function useWindowWidth(): number {
   const [w, setW] = useState<number>(
@@ -38,39 +41,53 @@ function useWindowWidth(): number {
 }
 
 // ─────────────────────────────────────────────
-// DESIGN TOKENS  (mirrors homepage)
+// DESIGN TOKENS (identical to homepage)
 // ─────────────────────────────────────────────
 const C = {
-  ink:     "#0a0612",
-  pink:    "#ff7ac3",
-  magenta: "#ff33bc",
-  violet:  "#8061ff",
-  indigo:  "#6a66ff",
-  white:   "#ffffff",
-  dim:     "rgba(255,255,255,0.55)",
-  dim2:    "rgba(255,255,255,0.72)",
-  grad:    "linear-gradient(90deg, #ff33bc, #8061ff)",
-  border:  "1px solid rgba(128,97,255,0.35)",
-  borderH: "1px solid rgba(255,122,195,0.55)",
-  cardBg:  "rgba(128,97,255,0.06)",
+  bg: "#ffffff",
+  bgSub: "#f7f6ff",
+  bgCard: "#f2f0ff",
+  ink: "#0a0612",
+  inkDim: "rgba(10,6,18,0.50)",
+  inkDim2: "rgba(10,6,18,0.72)",
+  pink: "#ff33bc",
+  violet: "#7c55ff",
+  indigo: "#6a66ff",
+  grad: "linear-gradient(90deg, #ff33bc, #7c55ff)",
+  gradD: "linear-gradient(135deg, #ff33bc, #7c55ff)",
+  border: "1px solid rgba(124,85,255,0.18)",
+  borderH: "1px solid rgba(255,51,188,0.45)",
+  borderS: "1px solid rgba(124,85,255,0.28)",
+  cardBg: "rgba(124,85,255,0.05)",
+  cardBgM: "rgba(124,85,255,0.09)",
+  shadowSm: "0 2px 12px rgba(124,85,255,0.10)",
+  shadowMd: "0 8px 32px rgba(124,85,255,0.14)",
+  shadowLg: "0 20px 60px rgba(124,85,255,0.18)",
 } as const;
 
-type CSSProps = React.CSSProperties;
+// ─────────────────────────────────────────────
+// LAYOUT CONSTANTS (identical to homepage)
+// ─────────────────────────────────────────────
+const SITE_MAX_W = 1200;
 
-// ─────────────────────────────────────────────
-// LAYOUT HELPERS
-// ─────────────────────────────────────────────
-function pad(w: number): string {
+function sitePad(w: number): string {
   if (w < 640) return "0 20px";
   if (w < 900) return "0 32px";
   return "0 48px";
 }
-function outer(w: number, mt = 96): CSSProps {
-  return { maxWidth: "1200px", margin: `${mt}px auto 0`, padding: pad(w) };
+
+function siteOuter(w: number, mt = 96): React.CSSProperties {
+  return {
+    maxWidth: SITE_MAX_W,
+    margin: `${mt}px auto 0`,
+    padding: sitePad(w),
+  };
 }
 
+type CSSProps = React.CSSProperties;
+
 // ─────────────────────────────────────────────
-// ATOMS
+// ATOMIC COMPONENTS (identical to homepage)
 // ─────────────────────────────────────────────
 function PillLabel({ children }: { children: React.ReactNode }) {
   return (
@@ -78,22 +95,36 @@ function PillLabel({ children }: { children: React.ReactNode }) {
       style={{
         display: "inline-flex",
         alignItems: "center",
-        gap: "8px",
-        fontSize: "11px",
-        fontWeight: 500,
+        gap: 8,
+        fontSize: 11,
+        fontWeight: 600,
         letterSpacing: "0.18em",
         textTransform: "uppercase",
         color: C.pink,
-        marginBottom: "16px",
+        marginBottom: 16,
       }}
     >
-      <span style={{ display: "block", width: "20px", height: "1px", background: C.pink, flexShrink: 0 }} />
+      <span
+        style={{
+          display: "block",
+          width: 20,
+          height: 1,
+          background: C.pink,
+          flexShrink: 0,
+        }}
+      />
       {children}
     </span>
   );
 }
 
-function GradientText({ children }: { children: React.ReactNode }) {
+function GradientText({
+  children,
+  style,
+}: {
+  children: React.ReactNode;
+  style?: CSSProps;
+}) {
   return (
     <span
       style={{
@@ -101,6 +132,8 @@ function GradientText({ children }: { children: React.ReactNode }) {
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
         backgroundClip: "text",
+        display: "inline",
+        ...style,
       }}
     >
       {children}
@@ -109,54 +142,80 @@ function GradientText({ children }: { children: React.ReactNode }) {
 }
 
 interface BtnProps {
-  href: string;
+  href?: string;
+  onClick?: () => void;
   variant: "primary" | "ghost";
   children: React.ReactNode;
   style?: CSSProps;
 }
-function Btn({ href, variant, children, style }: BtnProps) {
+function Btn({ href, onClick, variant, children, style }: BtnProps) {
   const base: CSSProps = {
     display: "inline-flex",
     alignItems: "center",
-    gap: "8px",
+    justifyContent: "center",
+    gap: 8,
     padding: "13px 28px",
-    borderRadius: "8px",
-    fontSize: "14px",
+    borderRadius: 8,
+    fontSize: 14,
     fontWeight: 700,
     letterSpacing: "0.04em",
     textDecoration: "none",
-    transition: "opacity 0.2s, transform 0.2s",
+    cursor: "pointer",
+    border: "none",
+    transition: "opacity 0.2s, transform 0.2s, box-shadow 0.2s",
     ...style,
   };
-  const vs: Record<string, CSSProps> = {
-    primary: { background: C.grad, color: "#fff", boxShadow: "0 8px 32px rgba(128,97,255,0.35)" },
-    ghost:   { background: "transparent", color: C.violet, border: "1.5px solid rgba(128,97,255,0.6)" },
+  const vars: Record<string, CSSProps> = {
+    primary: {
+      background: C.grad,
+      color: "#fff",
+      boxShadow: "0 8px 32px rgba(124,85,255,0.28)",
+    },
+    ghost: {
+      background: "transparent",
+      color: C.violet,
+      border: "1.5px solid rgba(124,85,255,0.45)",
+    },
   };
+  const merged = { ...base, ...vars[variant] };
+  const hover = {
+    onMouseEnter: (e: React.MouseEvent<HTMLElement>) => {
+      (e.currentTarget as HTMLElement).style.opacity = "0.88";
+      (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)";
+    },
+    onMouseLeave: (e: React.MouseEvent<HTMLElement>) => {
+      (e.currentTarget as HTMLElement).style.opacity = "1";
+      (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+    },
+  };
+  if (href)
+    return (
+      <a href={href} style={merged} {...hover}>
+        {children}
+      </a>
+    );
   return (
-    <a
-      href={href}
-      style={{ ...base, ...vs[variant] }}
-      onMouseEnter={(e) => {
-        (e.currentTarget as HTMLAnchorElement).style.opacity = "0.88";
-        (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(-2px)";
-      }}
-      onMouseLeave={(e) => {
-        (e.currentTarget as HTMLAnchorElement).style.opacity = "1";
-        (e.currentTarget as HTMLAnchorElement).style.transform = "translateY(0)";
-      }}
-    >
+    <button style={merged} onClick={onClick} {...hover}>
       {children}
-    </a>
+    </button>
   );
 }
 
 // ─────────────────────────────────────────────
-// 1. HEADER  (lightweight — links back to home)
+// HEADER (identical to homepage)
 // ─────────────────────────────────────────────
+const NAV_LINKS = [
+  { label: "Marketplace", href: "/marketplace" },
+  { label: "Creators",    href: "/creators"    },
+  { label: "About Us", href: "/about" },
+  { label: "Growth",      href: "/progress"      },
+];
+
 function Header() {
-  const w        = useWindowWidth();
+  const w = useWindowWidth();
   const isMobile = w < 640;
   const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const cb = () => setScrolled(window.scrollY > 20);
@@ -168,890 +227,840 @@ function Header() {
     <header
       style={{
         position: "fixed",
-        top: 0, left: 0, right: 0,
+        top: 0,
+        left: 0,
+        right: 0,
         zIndex: 100,
-        transition: "background 0.3s, border-color 0.3s",
-        background: scrolled ? "rgba(10,6,18,0.92)" : "transparent",
+        transition: "background 0.3s, border-color 0.3s, box-shadow 0.3s",
+        background: scrolled ? "rgba(255,255,255,0.94)" : "transparent",
         backdropFilter: scrolled ? "blur(14px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(128,97,255,0.2)" : "1px solid transparent",
+        borderBottom: scrolled
+          ? "1px solid rgba(124,85,255,0.12)"
+          : "1px solid transparent",
+        boxShadow: scrolled
+          ? "0 2px 20px rgba(124,85,255,0.08)"
+          : "none",
       }}
     >
       <div
         style={{
-          maxWidth: "1200px",
+          maxWidth: SITE_MAX_W,
           margin: "0 auto",
-          padding: isMobile ? "16px 20px" : "18px 48px",
+          padding: isMobile
+            ? "16px 20px"
+            : w < 900
+            ? "18px 32px"
+            : "18px 48px",
           display: "flex",
           alignItems: "center",
-          gap: "12px",
+          gap: 12,
         }}
       >
-        <a href="/zone" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
-          <Image src="/Nex.webp" alt="Nexfluence" width={isMobile ? 36 : 44} height={isMobile ? 36 : 44} style={{ borderRadius: "10px" }} />
-          <div>
-            <p style={{ fontSize: isMobile ? "14px" : "17px", fontWeight: 800, color: "#fff", letterSpacing: "-0.02em", lineHeight: 1 }}>
-              Nexfluence
-            </p>
-            <p style={{ fontSize: "10px", color: C.pink, letterSpacing: "0.08em", marginTop: "2px" }}>CREATOR NEXUS</p>
-          </div>
+        <a
+          href="/"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            textDecoration: "none",
+            flexShrink: 0,
+          }}
+        >
+          <Image
+            src="/Nex.webp"
+            alt="Nexfluence"
+            width={isMobile ? 34 : 40}
+            height={isMobile ? 34 : 40}
+            style={{ borderRadius: 10 }}
+          />
         </a>
-
         {!isMobile && (
-          <nav style={{ display: "flex", gap: "28px", marginLeft: "40px" }}>
-            {[
-              { label: "Home",     href: "/zone"              },
-              { label: "Services", href: "/zone#services"     },
-              { label: "Creators", href: "/zone#creators"     },
-              { label: "About",    href: "/zone/about", active: true },
-            ].map((l) => (
+          <nav style={{ display: "flex", gap: 28, marginLeft: 36 }}>
+            {NAV_LINKS.map((l) => (
               <a
                 key={l.label}
                 href={l.href}
                 style={{
-                  fontSize: "14px",
+                  fontSize: 14,
                   fontWeight: 500,
-                  color: l.active ? "#fff" : "rgba(255,255,255,0.55)",
-                  textDecoration: l.active ? "none" : "none",
+                  color: C.inkDim,
+                  textDecoration: "none",
                   letterSpacing: "0.01em",
-                  borderBottom: l.active ? `1px solid ${C.pink}` : "none",
-                  paddingBottom: l.active ? "2px" : "0",
                   transition: "color 0.18s",
                 }}
+                onMouseEnter={(e) =>
+                  ((e.currentTarget as HTMLAnchorElement).style.color =
+                    C.ink)
+                }
+                onMouseLeave={(e) =>
+                  ((e.currentTarget as HTMLAnchorElement).style.color =
+                    C.inkDim)
+                }
               >
                 {l.label}
               </a>
             ))}
           </nav>
         )}
-
-        <div style={{ marginLeft: "auto" }}>
-          <Btn href="/zone#contact" variant="primary" style={{ padding: "10px 20px", fontSize: "13px" }}>
-            Work With Us
-          </Btn>
+        <div
+          style={{
+            marginLeft: "auto",
+            display: "flex",
+            gap: 10,
+            alignItems: "center",
+          }}
+        >
+          {!isMobile && (
+            <>
+              <Btn
+                href="#how-it-works"
+                variant="ghost"
+                style={{ padding: "10px 20px", fontSize: 13 }}
+              >
+                For Creators
+              </Btn>
+              <Btn
+                href="#contact"
+                variant="primary"
+                style={{ padding: "10px 20px", fontSize: 13 }}
+              >
+                For Brands
+              </Btn>
+            </>
+          )}
+          {isMobile && (
+            <>
+              <Btn
+                href="#contact"
+                variant="primary"
+                style={{ padding: "9px 14px", fontSize: 12 }}
+              >
+                For Brands
+              </Btn>
+              <button
+                onClick={() => setMenuOpen(!menuOpen)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 4,
+                  color: C.ink,
+                  fontSize: 20,
+                }}
+              >
+                {menuOpen ? "✕" : "☰"}
+              </button>
+            </>
+          )}
         </div>
       </div>
+      {isMobile && menuOpen && (
+        <div
+          style={{
+            background: "rgba(255,255,255,0.98)",
+            borderTop: "1px solid rgba(124,85,255,0.12)",
+            padding: 20,
+            display: "flex",
+            flexDirection: "column",
+            gap: 20,
+          }}
+        >
+          {NAV_LINKS.map((l) => (
+            <a
+              key={l.label}
+              href={l.href}
+              onClick={() => setMenuOpen(false)}
+              style={{
+                fontSize: 16,
+                fontWeight: 500,
+                color: C.inkDim2,
+                textDecoration: "none",
+              }}
+            >
+              {l.label}
+            </a>
+          ))}
+          <a
+            href="#how-it-works"
+            onClick={() => setMenuOpen(false)}
+            style={{
+              fontSize: 15,
+              fontWeight: 600,
+              color: C.pink,
+              textDecoration: "none",
+            }}
+          >
+            For Creators →
+          </a>
+        </div>
+      )}
     </header>
   );
 }
 
 // ─────────────────────────────────────────────
-// 2. PAGE HERO
+// 1. FOUNDER HERO SECTION
 // ─────────────────────────────────────────────
-function PageHero() {
-  const w        = useWindowWidth();
+function FounderHero() {
+  const w = useWindowWidth();
   const isMobile = w < 640;
+  const isTablet = w >= 640 && w < 900;
+  const hPad = isMobile ? 20 : w < 900 ? 32 : 48;
 
   return (
     <section
       style={{
         position: "relative",
-        paddingTop: isMobile ? "120px" : "140px",
-        paddingBottom: isMobile ? "72px" : "96px",
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
         overflow: "hidden",
+        background: C.bg,
       }}
     >
-      {/* Background elements */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <div
-          style={{
-            position: "absolute",
-            top: "0",
-            left: "50%",
-            transform: "translateX(-50%)",
-            width: "800px",
-            height: "500px",
-            background:
-              "radial-gradient(ellipse at 50% 0%, rgba(128,97,255,0.22) 0%, rgba(255,51,188,0.1) 40%, transparent 70%)",
-          }}
-        />
-        {/* Decorative horizontal rule */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: "1px",
-            background: "linear-gradient(90deg, transparent, rgba(128,97,255,0.4), rgba(255,51,188,0.4), transparent)",
-          }}
-        />
-      </div>
-
+      {/* Background decorations */}
       <div
         style={{
-          maxWidth: "1200px",
-          margin: "0 auto",
-          padding: pad(w),
-          position: "relative",
-          zIndex: 1,
-          textAlign: "center",
+          position: "absolute",
+          inset: 0,
+          zIndex: 0,
+          pointerEvents: "none",
         }}
       >
-        {/* Eyebrow badge */}
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "6px 16px",
-            borderRadius: "100px",
-            background: C.cardBg,
-            border: C.border,
-            marginBottom: "28px",
-          }}
-        >
-          <span style={{ fontSize: "14px" }}>🇱🇻</span>
-          <span style={{ fontSize: "12px", color: C.dim, letterSpacing: "0.04em" }}>
-            Founded in Riga, Latvia · 2024
-          </span>
-        </div>
-
-        {/* Headline */}
-        <h1
-          style={{
-            fontSize: isMobile ? "38px" : w < 900 ? "54px" : "72px",
-            fontWeight: 900,
-            letterSpacing: "-0.04em",
-            lineHeight: 1.0,
-            color: "#fff",
-            marginBottom: "24px",
-          }}
-        >
-          We're Building the
-          <br />
-          <GradientText>Baltic Creator Economy</GradientText>
-        </h1>
-
-        {/* Subtext */}
-        <p
-          style={{
-            fontSize: isMobile ? "15px" : "18px",
-            color: C.dim2,
-            lineHeight: 1.75,
-            maxWidth: "600px",
-            margin: "0 auto 40px",
-          }}
-        >
-          Nexfluence exists because the Baltics deserved better than copy-pasted
-          global influencer playbooks. We built something made for here, by people who
-          live here.
-        </p>
-
-        {/* Quick stats row */}
-        <div
-          style={{
-            display: "inline-flex",
-            gap: isMobile ? "24px" : "48px",
-            flexWrap: "wrap",
-            justifyContent: "center",
-            padding: "20px 32px",
-            borderRadius: "16px",
-            background: C.cardBg,
-            border: C.border,
-          }}
-        >
-          {[
-            { val: "2024", label: "Founded"          },
-            { val: "3",    label: "Countries"         },
-            { val: "500+", label: "Creator Network"   },
-            { val: "25+",  label: "Brand Partners"    },
-          ].map((s) => (
-            <div key={s.label} style={{ textAlign: "center" }}>
-              <p
-                style={{
-                  fontSize: isMobile ? "22px" : "28px",
-                  fontWeight: 900,
-                  letterSpacing: "-0.03em",
-                  background: C.grad,
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                  backgroundClip: "text",
-                  lineHeight: 1,
-                  marginBottom: "4px",
-                }}
-              >
-                {s.val}
-              </p>
-              <p style={{ fontSize: "11px", color: C.dim, fontWeight: 500, letterSpacing: "0.04em" }}>
-                {s.label}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────
-// 3. ORIGIN STORY
-// ─────────────────────────────────────────────
-function OriginStory() {
-  const w        = useWindowWidth();
-  const isMobile = w < 640;
-  const isTablet = w >= 640 && w < 900;
-
-  return (
-    <section style={outer(w, 0)}>
-      {/* Full-width image strip */}
-      <div
-        style={{
-          position: "relative",
-          width: "100%",
-          height: isMobile ? "220px" : "360px",
-          borderRadius: "24px",
-          overflow: "hidden",
-          marginBottom: isMobile ? "48px" : "72px",
-        }}
-      >
-        <Image
-          src="/Skyline.webp"
-          alt="Riga — Where Nexfluence was born"
-          fill
-          style={{ objectFit: "cover", objectPosition: "center 60%" }}
-        />
-        {/* Overlay */}
         <div
           style={{
             position: "absolute",
             inset: 0,
             background:
-              "linear-gradient(135deg, rgba(128,97,255,0.55) 0%, rgba(255,51,188,0.3) 40%, rgba(10,6,18,0.3) 100%)",
+              "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(124,85,255,0.09) 0%, rgba(255,51,188,0.04) 40%, transparent 70%)",
           }}
         />
-        {/* Bottom fade */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "linear-gradient(rgba(124,85,255,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(124,85,255,0.055) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+            maskImage:
+              "radial-gradient(ellipse 70% 70% at 50% 40%, black 40%, transparent 80%)",
+          }}
+        />
         <div
           style={{
             position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
-            height: "50%",
-            background: "linear-gradient(to top, rgba(10,6,18,0.85), transparent)",
+            height: 200,
+            background: "linear-gradient(to top, #ffffff, transparent)",
           }}
         />
-
-        {/* Overlaid text */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: "28px",
-            left: "32px",
-            right: "32px",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "flex-end",
-            flexWrap: "wrap",
-            gap: "12px",
-          }}
-        >
-          <p
-            style={{
-              fontSize: isMobile ? "18px" : "26px",
-              fontWeight: 900,
-              color: "#fff",
-              letterSpacing: "-0.03em",
-              lineHeight: 1.2,
-              textShadow: "0 2px 20px rgba(10,6,18,0.8)",
-            }}
-          >
-            Riga, Latvia
-            <br />
-            <span style={{ fontSize: isMobile ? "12px" : "16px", fontWeight: 400, color: "rgba(255,255,255,0.7)", letterSpacing: "0" }}>
-              Where the idea became a company
-            </span>
-          </p>
-          <span
-            style={{
-              fontSize: "12px",
-              fontWeight: 600,
-              padding: "6px 14px",
-              borderRadius: "8px",
-              background: "rgba(10,6,18,0.7)",
-              backdropFilter: "blur(8px)",
-              border: "1px solid rgba(255,255,255,0.15)",
-              color: "rgba(255,255,255,0.75)",
-            }}
-          >
-            Est. 2024
-          </span>
-        </div>
       </div>
 
-      {/* Story text — two column on desktop */}
+      {/* Content */}
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: isMobile || isTablet ? "1fr" : "1fr 1fr",
-          gap: isMobile ? "32px" : "80px",
-          alignItems: "start",
-        }}
-      >
-        {/* Left */}
-        <div>
-          <PillLabel>Our Story</PillLabel>
-          <h2
-            style={{
-              fontSize: isMobile ? "28px" : "38px",
-              fontWeight: 900,
-              letterSpacing: "-0.035em",
-              lineHeight: 1.1,
-              color: "#fff",
-              marginBottom: "24px",
-            }}
-          >
-            The Baltics Had
-            <br />
-            <GradientText>No Home for Creators</GradientText>
-          </h2>
-          <p style={{ fontSize: "15px", color: C.dim2, lineHeight: 1.85, marginBottom: "20px" }}>
-            When our founder Artūrs looked at the influencer marketing landscape in Latvia,
-            he saw the same thing playing out everywhere: brands were throwing budgets at
-            follower counts with no way to measure real results, and creators were being
-            undercut, ghosted, or locked into agencies that didn't understand their audience.
-          </p>
-          <p style={{ fontSize: "15px", color: C.dim2, lineHeight: 1.85 }}>
-            The global platforms — built for New York and London — treated the Baltics as
-            an afterthought. Local creators had no professional infrastructure. Local brands
-            had no trusted pipeline. So we built one.
-          </p>
-        </div>
-
-        {/* Right */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          <p style={{ fontSize: "15px", color: C.dim2, lineHeight: 1.85 }}>
-            Nexfluence started in 2024 as a simple idea: what if influencer marketing in
-            the Baltics was built on performance rather than promises? What if brands paid
-            only for results they could actually measure — and creators earned based on the
-            real impact they drove?
-          </p>
-          <p style={{ fontSize: "15px", color: C.dim2, lineHeight: 1.85 }}>
-            That question became a product. A verified creator network. A platform. And now
-            — a growing community of Latvia's, Lithuania's, and Estonia's most authentic
-            content creators working alongside brands that share their values.
-          </p>
-
-          {/* Pull quote */}
-          <div
-            style={{
-              padding: "24px 28px",
-              borderRadius: "16px",
-              background: "rgba(128,97,255,0.08)",
-              border: "1px solid rgba(128,97,255,0.3)",
-              borderLeft: `3px solid ${C.magenta}`,
-              marginTop: "8px",
-            }}
-          >
-            <p
-              style={{
-                fontSize: isMobile ? "16px" : "18px",
-                fontWeight: 700,
-                color: "#fff",
-                lineHeight: 1.5,
-                letterSpacing: "-0.01em",
-                fontStyle: "italic",
-              }}
-            >
-              "The Baltic creator economy doesn't need to follow anyone else's template.
-              It needs to build its own."
-            </p>
-            <p style={{ fontSize: "12px", color: C.pink, marginTop: "12px", fontWeight: 600 }}>
-              — Artūrs, Founder & CEO, Nexfluence
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────
-// 4. MISSION STATEMENT  (full-width editorial block)
-// ─────────────────────────────────────────────
-function MissionBlock() {
-  const w        = useWindowWidth();
-  const isMobile = w < 640;
-
-  return (
-    <section
-      style={{
-        marginTop: "96px",
-        position: "relative",
-        overflow: "hidden",
-        padding: isMobile ? "64px 20px" : "96px 48px",
-        background: "rgba(128,97,255,0.05)",
-        borderTop: "1px solid rgba(128,97,255,0.15)",
-        borderBottom: "1px solid rgba(128,97,255,0.15)",
-      }}
-    >
-      {/* Background glow */}
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background:
-            "radial-gradient(ellipse 60% 80% at 50% 50%, rgba(128,97,255,0.15) 0%, rgba(255,51,188,0.08) 40%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Large decorative quote mark */}
-      <p
-        style={{
-          position: "absolute",
-          top: "-20px",
-          left: isMobile ? "16px" : "80px",
-          fontSize: "200px",
-          fontWeight: 900,
-          lineHeight: 1,
-          background: C.grad,
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-          opacity: 0.08,
-          userSelect: "none",
-          pointerEvents: "none",
-        }}
-      >
-        "
-      </p>
-
-      <div
-        style={{
-          maxWidth: "900px",
+          maxWidth: SITE_MAX_W,
+          width: "100%",
           margin: "0 auto",
-          textAlign: "center",
+          paddingTop: isMobile ? 130 : 150,
+          paddingBottom: isMobile ? 60 : 100,
+          paddingLeft: hPad,
+          paddingRight: hPad,
+          boxSizing: "border-box",
+          display: "grid",
+          gridTemplateColumns:
+            !isMobile && !isTablet ? "1fr 1fr" : "1fr",
+          gap: 48,
+          alignItems: "center",
           position: "relative",
           zIndex: 1,
         }}
       >
-        <PillLabel>Our Mission</PillLabel>
+        {/* Left — founder info */}
+        <div>
+          <PillLabel>Our Founder</PillLabel>
+          <h1
+            style={{
+              fontSize: isMobile ? 36 : isTablet ? 46 : 56,
+              fontWeight: 900,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.05,
+              color: C.ink,
+              margin: 0,
+              marginBottom: 24,
+            }}
+          >
+            Building the{" "}
+            <GradientText>Future of Creator</GradientText>
+            <br />
+            Economy in the Baltics
+          </h1>
+          <p
+            style={{
+              fontSize: isMobile ? 16 : 18,
+              color: C.inkDim2,
+              lineHeight: 1.75,
+              maxWidth: 480,
+              marginBottom: 28,
+            }}
+          >
+            “I started Nexfluence to solve a problem I lived every day —
+            the disconnect between brands and authentic Baltic creators.
+            We’ve grown into the region’s first performance‑based influencer
+            platform because we never forgot why we began: real people,
+            real stories, real results.”
+          </p>
+          <p
+            style={{
+              fontSize: 14,
+              color: C.inkDim,
+              marginBottom: 36,
+            }}
+          >
+            <strong style={{ color: C.ink, fontWeight: 700 }}>
+              Name Surname
+            </strong>{" "}
+            · Founder & CEO, Nexfluence
+          </p>
+          <Btn href="#story" variant="primary">
+            Our Story ↓
+          </Btn>
+        </div>
 
-        <p
-          style={{
-            fontSize: isMobile ? "22px" : w < 900 ? "30px" : "38px",
-            fontWeight: 900,
-            letterSpacing: "-0.03em",
-            lineHeight: 1.2,
-            color: "#fff",
-            marginBottom: "32px",
-          }}
-        >
-          To make influencer marketing in the Baltics{" "}
-          <GradientText>transparent, measurable, and worth it</GradientText>{" "}
-          — for both brands and the creators who power them.
-        </p>
+        {/* Right — founder portrait (desktop only) */}
+        {!isMobile && !isTablet && (
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              height: 500,
+              borderRadius: 24,
+              overflow: "hidden",
+              border: "1px solid rgba(124,85,255,0.18)",
+              boxShadow: "0 24px 64px rgba(124,85,255,0.16)",
+            }}
+          >
+            <Image
+              src="/founder.webp" /* ← replace with actual founder image */
+              alt="Founder"
+              fill
+              style={{ objectFit: "cover", objectPosition: "center 20%" }}
+              priority
+            />
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                  "linear-gradient(135deg, rgba(124,85,255,0.15) 0%, rgba(255,51,188,0.08) 50%, transparent 70%)",
+              }}
+            />
+          </div>
+        )}
+      </div>
 
-        {/* Mission pillars */}
+      {/* Tablet / Mobile — portrait below text */}
+      {(isMobile || isTablet) && (
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)",
-            gap: "16px",
-            marginTop: "48px",
-            textAlign: "left",
+            maxWidth: SITE_MAX_W,
+            width: "100%",
+            margin: "0 auto",
+            paddingLeft: hPad,
+            paddingRight: hPad,
+            paddingBottom: 80,
+            boxSizing: "border-box",
+            position: "relative",
+            zIndex: 1,
           }}
         >
-          {[
-            {
-              icon: "🔍",
-              title: "Transparency",
-              desc: "Every campaign result is tracked and reported in full. No black boxes, no inflated numbers.",
-            },
-            {
-              icon: "📏",
-              title: "Measurability",
-              desc: "ROI is not optional. Every brief includes clear KPIs and every payout is tied to real outcomes.",
-            },
-            {
-              icon: "⚖️",
-              title: "Fairness",
-              desc: "Creators are paid what they deserve. Brands pay for what they get. That's the only model we run.",
-            },
-          ].map((p) => (
-            <div
-              key={p.title}
-              style={{
-                padding: "22px",
-                borderRadius: "16px",
-                background: C.cardBg,
-                border: C.border,
-              }}
-            >
-              <p style={{ fontSize: "24px", marginBottom: "10px" }}>{p.icon}</p>
-              <p style={{ fontSize: "15px", fontWeight: 700, color: "#fff", marginBottom: "8px", letterSpacing: "-0.01em" }}>
-                {p.title}
-              </p>
-              <p style={{ fontSize: "13px", color: C.dim, lineHeight: 1.7 }}>{p.desc}</p>
-            </div>
-          ))}
+          <div
+            style={{
+              position: "relative",
+              width: "100%",
+              height: isMobile ? 320 : 420,
+              borderRadius: 20,
+              overflow: "hidden",
+              border: "1px solid rgba(124,85,255,0.18)",
+              boxShadow: "0 16px 48px rgba(124,85,255,0.14)",
+            }}
+          >
+            <Image
+              src="/founder.webp"
+              alt="Founder"
+              fill
+              style={{ objectFit: "cover", objectPosition: "center 20%" }}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
 
 // ─────────────────────────────────────────────
-// 5. CORE VALUES
+// 2. OUR STORY — BENTO GRID
 // ─────────────────────────────────────────────
-interface Value {
-  number: string;
-  title: string;
-  desc: string;
-  accent: string;
-}
-
-const VALUES: Value[] = [
-  {
-    number: "01",
-    title: "Authenticity Above Reach",
-    desc: "We believe a creator with 10K deeply engaged followers in Riga is worth more to a local brand than a global influencer with 1M passive scrollers. Genuine connection beats inflated numbers every time.",
-    accent: C.violet,
-  },
-  {
-    number: "02",
-    title: "Results-Only Compensation",
-    desc: "The days of paying for 'exposure' are over. Our entire business model is built on the principle that value should be paid for after it's been created, not promised in a pitch deck.",
-    accent: C.magenta,
-  },
-  {
-    number: "03",
-    title: "Creators Are Partners, Not Vendors",
-    desc: "We don't treat creators as ad inventory. They're creative professionals whose audience trust is sacred. We protect that trust by matching them only with brands that genuinely fit their world.",
-    accent: C.pink,
-  },
-  {
-    number: "04",
-    title: "Local Depth Over Global Width",
-    desc: "The Baltic market has its own culture, consumer behaviour, and language nuances. We go deep on these three countries rather than spreading thin across dozens. That depth is our edge.",
-    accent: C.indigo,
-  },
-];
-
-function CoreValues() {
-  const w        = useWindowWidth();
-  const isMobile = w < 640;
-
-  return (
-    <section style={outer(w)}>
-      <div style={{ textAlign: "center", marginBottom: "56px" }}>
-        <PillLabel>What We Stand For</PillLabel>
-        <h2
-          style={{
-            fontSize: isMobile ? "28px" : "38px",
-            fontWeight: 900,
-            letterSpacing: "-0.035em",
-            lineHeight: 1.1,
-            color: "#fff",
-          }}
-        >
-          Four Values That
-          <br />
-          <GradientText>Drive Every Decision</GradientText>
-        </h2>
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-        {VALUES.map((v, i) => (
-          <ValueRow key={v.number} value={v} index={i} isMobile={isMobile} />
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ValueRow({ value, index, isMobile }: { value: Value; index: number; isMobile: boolean }) {
+function BentoCard({
+  children,
+  style,
+  accent,
+}: {
+  children: React.ReactNode;
+  style?: CSSProps;
+  accent?: string;
+}) {
   const [hovered, setHovered] = useState(false);
-
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: "grid",
-        gridTemplateColumns: isMobile ? "1fr" : "120px 1fr auto",
-        gap: isMobile ? "12px" : "40px",
-        alignItems: "center",
-        padding: isMobile ? "28px 0" : "36px 32px",
-        borderRadius: "16px",
-        background: hovered ? "rgba(128,97,255,0.07)" : "transparent",
-        borderBottom: index < VALUES.length - 1 ? "1px solid rgba(128,97,255,0.15)" : "none",
-        transition: "background 0.2s",
-        cursor: "default",
+        borderRadius: 24,
+        padding: 28,
+        background: hovered
+          ? accent
+            ? `${accent}0a`
+            : C.cardBgM
+          : C.cardBg,
+        border: hovered
+          ? `1px solid ${accent ?? C.violet}44`
+          : C.border,
+        boxShadow: hovered
+          ? `0 20px 56px ${accent ?? C.violet}12`
+          : C.shadowSm,
+        transform: hovered ? "translateY(-4px)" : "none",
+        transition: "all 0.22s ease",
+        display: "flex",
+        flexDirection: "column",
+        gap: 16,
+        position: "relative",
+        overflow: "hidden",
+        ...style,
       }}
     >
-      {/* Number */}
-      <p
-        style={{
-          fontSize: isMobile ? "36px" : "48px",
-          fontWeight: 900,
-          letterSpacing: "-0.05em",
-          lineHeight: 1,
-          background: hovered
-            ? C.grad
-            : "linear-gradient(90deg, rgba(128,97,255,0.4), rgba(255,51,188,0.2))",
-          WebkitBackgroundClip: "text",
-          WebkitTextFillColor: "transparent",
-          backgroundClip: "text",
-          transition: "all 0.2s",
-        }}
-      >
-        {value.number}
-      </p>
-
-      {/* Content */}
-      <div>
-        <h3
-          style={{
-            fontSize: isMobile ? "18px" : "22px",
-            fontWeight: 800,
-            color: "#fff",
-            letterSpacing: "-0.02em",
-            marginBottom: "10px",
-            lineHeight: 1.2,
-          }}
-        >
-          {value.title}
-        </h3>
-        <p
-          style={{
-            fontSize: "14px",
-            color: hovered ? C.dim2 : C.dim,
-            lineHeight: 1.8,
-            maxWidth: "600px",
-            transition: "color 0.2s",
-          }}
-        >
-          {value.desc}
-        </p>
-      </div>
-
-      {/* Accent dot — desktop */}
-      {!isMobile && (
+      {hovered && (
         <div
           style={{
-            width: "10px",
-            height: "10px",
-            borderRadius: "50%",
-            background: hovered ? value.accent : "rgba(128,97,255,0.25)",
-            boxShadow: hovered ? `0 0 16px ${value.accent}` : "none",
-            transition: "all 0.2s",
-            flexShrink: 0,
+            position: "absolute",
+            top: 0,
+            left: "15%",
+            right: "15%",
+            height: 1,
+            background: `linear-gradient(90deg, transparent, ${
+              accent ?? C.violet
+            }55, transparent)`,
           }}
         />
       )}
+      {children}
     </div>
   );
 }
 
+function OurStory() {
+  const w = useWindowWidth();
+  const isMobile = w < 640;
+  const isTablet = w >= 640 && w < 1024;
+
+  return (
+    <section id="story" style={siteOuter(w)}>
+      <div style={{ textAlign: "center", marginBottom: 52 }}>
+        <PillLabel>Our Story</PillLabel>
+        <h2
+          style={{
+            fontSize: isMobile ? 28 : 38,
+            fontWeight: 900,
+            letterSpacing: "-0.035em",
+            lineHeight: 1.1,
+            color: C.ink,
+            marginBottom: 14,
+          }}
+        >
+          From a Baltic Problem to a{" "}
+          <GradientText>Baltic Solution</GradientText>
+        </h2>
+        <p
+          style={{
+            fontSize: isMobile ? 14 : 16,
+            color: C.inkDim,
+            maxWidth: 520,
+            margin: "0 auto",
+            lineHeight: 1.75,
+          }}
+        >
+          Nexfluence was born in Riga, Latvia — out of frustration with how
+          influencer marketing worked (or didn’t). We set out to build
+          something transparent, performance‑driven, and proudly Baltic.
+        </p>
+      </div>
+
+      {isMobile ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <StoryMission />
+          <StoryVision />
+          <StoryOrigin />
+        </div>
+      ) : isTablet ? (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: 14,
+          }}
+        >
+          <StoryMission style={{ gridColumn: "1 / -1" }} />
+          <StoryVision />
+          <StoryOrigin />
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(12, 1fr)",
+            gap: 14,
+          }}
+        >
+          <StoryMission style={{ gridColumn: "1 / 7" }} />
+          <StoryVision style={{ gridColumn: "7 / 13" }} />
+          <StoryOrigin style={{ gridColumn: "1 / 13" }} />
+        </div>
+      )}
+    </section>
+  );
+}
+
+function StoryMission({ style }: { style?: CSSProps }) {
+  return (
+    <BentoCard accent={C.violet} style={style}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+        <div
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 14,
+            background: `${C.violet}12`,
+            border: `1px solid ${C.violet}24`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 22,
+            flexShrink: 0,
+          }}
+        >
+          🎯
+        </div>
+        <div>
+          <h3
+            style={{
+              fontSize: 19,
+              fontWeight: 800,
+              color: C.ink,
+              letterSpacing: "-0.02em",
+              margin: "0 0 10px",
+            }}
+          >
+            Our Mission
+          </h3>
+          <p
+            style={{
+              fontSize: 14,
+              color: C.inkDim,
+              lineHeight: 1.75,
+              margin: 0,
+            }}
+          >
+            To make influencer marketing in the Baltic region simple,
+            measurable, and fair — for brands that want real ROI and
+            creators who deserve to be paid for real influence.
+          </p>
+        </div>
+      </div>
+    </BentoCard>
+  );
+}
+
+function StoryVision({ style }: { style?: CSSProps }) {
+  return (
+    <BentoCard accent={C.pink} style={style}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+        <div
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 14,
+            background: `${C.pink}12`,
+            border: `1px solid ${C.pink}24`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 22,
+            flexShrink: 0,
+          }}
+        >
+          🌍
+        </div>
+        <div>
+          <h3
+            style={{
+              fontSize: 19,
+              fontWeight: 800,
+              color: C.ink,
+              letterSpacing: "-0.02em",
+              margin: "0 0 10px",
+            }}
+          >
+            Our Vision
+          </h3>
+          <p
+            style={{
+              fontSize: 14,
+              color: C.inkDim,
+              lineHeight: 1.75,
+              margin: 0,
+            }}
+          >
+            Become the infrastructure powering the creator economy across
+            Northern Europe — starting with Latvia, Lithuania, and Estonia.
+          </p>
+        </div>
+      </div>
+    </BentoCard>
+  );
+}
+
+function StoryOrigin({ style }: { style?: CSSProps }) {
+  return (
+    <BentoCard accent={C.indigo} style={style}>
+      <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
+        <div
+          style={{
+            width: 50,
+            height: 50,
+            borderRadius: 14,
+            background: `${C.indigo}12`,
+            border: `1px solid ${C.indigo}24`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 22,
+            flexShrink: 0,
+          }}
+        >
+          ⏳
+        </div>
+        <div>
+          <h3
+            style={{
+              fontSize: 19,
+              fontWeight: 800,
+              color: C.ink,
+              letterSpacing: "-0.02em",
+              margin: "0 0 10px",
+            }}
+          >
+            How It Started
+          </h3>
+          <p
+            style={{
+              fontSize: 14,
+              color: C.inkDim,
+              lineHeight: 1.75,
+              margin: 0,
+            }}
+          >
+            Founded in 2024 in Riga, Nexfluence started as a small
+            WhatsApp group connecting local brands with trusted creators.
+            Today we’re a platform with 500+ vetted influencers and
+            25+ active brand partners across all three Baltic states.
+          </p>
+        </div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          gap: 12,
+          flexWrap: "wrap",
+          marginTop: 8,
+        }}
+      >
+        {["🇱🇻 Latvia", "🇱🇹 Lithuania", "🇪🇪 Estonia"].map((c) => (
+          <span
+            key={c}
+            style={{
+              fontSize: 12,
+              fontWeight: 600,
+              padding: "5px 11px",
+              borderRadius: 8,
+              background: `${C.indigo}0e`,
+              color: C.ink,
+              border: `1px solid ${C.indigo}1c`,
+            }}
+          >
+            {c}
+          </span>
+        ))}
+      </div>
+    </BentoCard>
+  );
+}
+
 // ─────────────────────────────────────────────
-// 6. THE TEAM
+// 3. TEAM SECTION
 // ─────────────────────────────────────────────
 interface TeamMember {
   name: string;
   role: string;
-  bio: string;
   photo: string;
-  ig?: string;
-  emoji: string;
-  tags: string[];
+  linkedin?: string;
 }
 
 const TEAM: TeamMember[] = [
   {
-    name: "Artūrs",
-    role: "Founder & CEO",
-    bio: "Artūrs spotted the gap in the Baltic influencer market and built Nexfluence from scratch. With a background spanning business development and digital strategy, he leads product vision, brand partnerships, and the long-term direction of the platform.",
-    photo: "/Speaker 2.webp",
-    ig: "https://www.instagram.com/nexfluence.eu",
-    emoji: "🧠",
-    tags: ["Strategy", "Product", "Partnerships"],
+    name: "Anna Liepa",
+    role: "Head of Creator Relations",
+    photo: "/team/member1.webp",
   },
   {
-    name: "Aleksandrs Silonovs",
-    role: "Sales Executive",
-    bio: "Aleksandrs is the face of Nexfluence in the market — building relationships with brands, scouting new partners, and driving the commercial pipeline. He leads our influencer workshop initiatives and brand outreach strategy.",
-    photo: "/Speaker 1.webp",
-    ig: "https://www.instagram.com/nexfluence.eu",
-    emoji: "🚀",
-    tags: ["Sales", "Brand Outreach", "Events"],
+    name: "Jānis Bērziņš",
+    role: "Campaign Manager",
+    photo: "/team/member2.webp",
   },
   {
-    name: "You?",
-    role: "Open Roles",
-    bio: "We're growing and always looking for people who are obsessed with creator culture, performance marketing, and the Baltic digital space. If that's you — reach out.",
-    photo: "/Event Place.webp",
-    emoji: "✨",
-    tags: ["Content", "Tech", "Marketing"],
+    name: "Līva Ozoliņa",
+    role: "Data & Analytics",
+    photo: "/team/member3.webp",
+  },
+  {
+    name: "Mārtiņš Kalniņš",
+    role: "Partnerships Lead",
+    photo: "/team/member4.webp",
+  },
+  {
+    name: "Elīna Siliņa",
+    role: "Content Strategist",
+    photo: "/team/member5.webp",
+  },
+  {
+    name: "Kārlis Vītols",
+    role: "Engineering Lead",
+    photo: "/team/member6.webp",
   },
 ];
 
 function TeamCard({ member }: { member: TeamMember }) {
   const [hovered, setHovered] = useState(false);
-
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        borderRadius: "24px",
+        borderRadius: 20,
         overflow: "hidden",
+        background: "#fff",
         border: hovered ? C.borderH : C.border,
-        background: C.cardBg,
+        boxShadow: hovered ? C.shadowMd : C.shadowSm,
         transform: hovered ? "translateY(-6px)" : "none",
-        boxShadow: hovered ? "0 24px 64px rgba(128,97,255,0.2)" : "none",
-        transition: "all 0.22s ease",
+        transition: "all 0.2s ease",
+        cursor: "default",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "24px 20px 20px",
+        textAlign: "center",
       }}
     >
-      {/* Photo */}
-      <div style={{ position: "relative", height: "280px" }}>
+      <div
+        style={{
+          width: 100,
+          height: 100,
+          borderRadius: "50%",
+          overflow: "hidden",
+          border: "3px solid rgba(124,85,255,0.14)",
+          marginBottom: 16,
+        }}
+      >
         <Image
           src={member.photo}
           alt={member.name}
-          fill
-          style={{ objectFit: "cover", objectPosition: "top" }}
+          width={100}
+          height={100}
+          style={{ objectFit: "cover" }}
         />
-        <div
+      </div>
+      <h3
+        style={{
+          fontSize: 16,
+          fontWeight: 700,
+          color: C.ink,
+          letterSpacing: "-0.01em",
+          margin: "0 0 4px",
+        }}
+      >
+        {member.name}
+      </h3>
+      <p
+        style={{
+          fontSize: 13,
+          color: C.pink,
+          fontWeight: 500,
+          margin: "0 0 8px",
+        }}
+      >
+        {member.role}
+      </p>
+      {member.linkedin && (
+        <a
+          href={member.linkedin}
+          target="_blank"
+          rel="noreferrer"
           style={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(to top, rgba(10,6,18,0.95) 0%, rgba(10,6,18,0.2) 55%, transparent 75%)",
-          }}
-        />
-        {/* Role badge */}
-        <div
-          style={{
-            position: "absolute",
-            top: "16px",
-            left: "16px",
-            padding: "5px 12px",
-            borderRadius: "8px",
-            background: "rgba(10,6,18,0.75)",
-            backdropFilter: "blur(8px)",
-            border: "1px solid rgba(255,255,255,0.12)",
+            fontSize: 12,
+            color: C.violet,
+            textDecoration: "none",
+            fontWeight: 600,
           }}
         >
-          <p style={{ fontSize: "11px", fontWeight: 600, color: C.pink, letterSpacing: "0.04em" }}>
-            {member.emoji} {member.role}
-          </p>
-        </div>
-      </div>
-
-      {/* Info */}
-      <div style={{ padding: "24px 26px 28px" }}>
-        <h3
-          style={{
-            fontSize: "20px",
-            fontWeight: 800,
-            color: "#fff",
-            letterSpacing: "-0.02em",
-            marginBottom: "4px",
-          }}
-        >
-          {member.name}
-        </h3>
-        <p style={{ fontSize: "13px", color: C.dim, lineHeight: 1.75, marginBottom: "18px" }}>
-          {member.bio}
-        </p>
-
-        {/* Tags */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: member.ig ? "18px" : "0" }}>
-          {member.tags.map((t) => (
-            <span
-              key={t}
-              style={{
-                fontSize: "11px",
-                fontWeight: 500,
-                padding: "4px 10px",
-                borderRadius: "6px",
-                background: "rgba(128,97,255,0.15)",
-                color: C.violet,
-                letterSpacing: "0.02em",
-              }}
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-
-        {/* CTA for open role */}
-        {!member.ig && (
-          <a
-            href="mailto:careers@nexfluence.eu"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "6px",
-              fontSize: "13px",
-              fontWeight: 700,
-              color: C.pink,
-              textDecoration: "none",
-              marginTop: "4px",
-              transition: "opacity 0.18s",
-            }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.75")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
-          >
-            Get in touch →
-          </a>
-        )}
-      </div>
+          LinkedIn →
+        </a>
+      )}
     </div>
   );
 }
 
-function TheTeam() {
-  const w        = useWindowWidth();
+function Team() {
+  const w = useWindowWidth();
   const isMobile = w < 640;
   const isTablet = w >= 640 && w < 900;
 
   return (
-    <section style={outer(w)}>
-      <div style={{ marginBottom: "48px" }}>
-        <PillLabel>The Team</PillLabel>
-        <div
+    <section id="team" style={siteOuter(w)}>
+      <div style={{ textAlign: "center", marginBottom: 52 }}>
+        <PillLabel>Our Team</PillLabel>
+        <h2
           style={{
-            display: "flex",
-            alignItems: isMobile ? "flex-start" : "flex-end",
-            justifyContent: "space-between",
-            flexDirection: isMobile ? "column" : "row",
-            gap: "16px",
+            fontSize: isMobile ? 28 : 38,
+            fontWeight: 900,
+            letterSpacing: "-0.035em",
+            lineHeight: 1.1,
+            color: C.ink,
           }}
         >
-          <h2
-            style={{
-              fontSize: isMobile ? "28px" : "38px",
-              fontWeight: 900,
-              letterSpacing: "-0.035em",
-              lineHeight: 1.1,
-              color: "#fff",
-            }}
-          >
-            Small Team,
-            <br />
-            <GradientText>Big Ambitions</GradientText>
-          </h2>
-          <p
-            style={{
-              fontSize: "14px",
-              color: C.dim,
-              maxWidth: "320px",
-              lineHeight: 1.7,
-              textAlign: isMobile ? "left" : "right",
-            }}
-          >
-            We're a lean team that moves fast and operates with the conviction that
-            the Baltic creator economy is only just getting started.
-          </p>
-        </div>
+          The People Behind{" "}
+          <GradientText>the Platform</GradientText>
+        </h2>
       </div>
-
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr 1fr" : "repeat(3, 1fr)",
-          gap: "20px",
+          gridTemplateColumns: isMobile
+            ? "1fr 1fr"
+            : isTablet
+            ? "repeat(3, 1fr)"
+            : "repeat(6, 1fr)",
+          gap: 14,
         }}
       >
         {TEAM.map((m) => (
@@ -1063,507 +1072,194 @@ function TheTeam() {
 }
 
 // ─────────────────────────────────────────────
-// 7. WHAT WE'RE BUILDING  (platform vision)
+// 4. EVENTS & COMMUNITY
 // ─────────────────────────────────────────────
-interface Roadmapitem {
-  phase: string;
-  title: string;
-  desc: string;
-  status: "live" | "building" | "next";
-  items: string[];
-}
-
-const ROADMAP: Roadmapitem[] = [
+const EVENT_PHOTOS = [
+  { src: "/events/influencer1.webp", alt: "Influencer meetup in Riga" },
+  { src: "/events/influencer2.webp", alt: "Brands & creators networking" },
   {
-    phase: "Phase 1",
-    title: "Creator Network",
-    status: "live",
-    desc: "Building and verifying the Baltic's largest curated creator database — across Instagram, TikTok, and YouTube.",
-    items: ["500+ vetted creators", "3 countries covered", "Brand campaign matching", "Manual outreach tooling"],
+    src: "/events/influencer3.webp",
+    alt: "Nexfluence Connect 2025 stage",
   },
-  {
-    phase: "Phase 2",
-    title: "Platform Launch",
-    status: "building",
-    desc: "A full-stack SaaS platform where brands manage campaigns and creators manage their income — all in one place.",
-    items: ["Brand campaign dashboard", "Creator profile portal", "Campaign brief builder", "Content approval flow"],
-  },
-  {
-    phase: "Phase 3",
-    title: "Performance Engine",
-    status: "next",
-    desc: "Real-time analytics, affiliate tracking, automated payouts, and AI-assisted creator matching.",
-    items: ["Live conversion tracking", "Promo code system", "Automated payouts", "Audience insights API"],
-  },
+  { src: "/events/influencer4.webp", alt: "Creator masterclass" },
+  { src: "/events/influencer5.webp", alt: "Pop‑up brand activation" },
+  { src: "/events/influencer6.webp", alt: "After‑party celebration" },
 ];
 
-const STATUS_STYLES: Record<string, { color: string; bg: string; label: string }> = {
-  live:     { color: "#34d399", bg: "rgba(52,211,153,0.12)", label: "Live"     },
-  building: { color: C.violet, bg: "rgba(128,97,255,0.15)", label: "Building" },
-  next:     { color: C.dim,    bg: "rgba(255,255,255,0.06)", label: "Up Next"  },
-};
-
-function WhatWereBuilding() {
-  const w        = useWindowWidth();
+function Events() {
+  const w = useWindowWidth();
   const isMobile = w < 640;
   const isTablet = w >= 640 && w < 900;
 
   return (
-    <section
-      style={{
-        marginTop: "96px",
-        background: "rgba(128,97,255,0.04)",
-        borderTop: "1px solid rgba(128,97,255,0.15)",
-        borderBottom: "1px solid rgba(128,97,255,0.15)",
-        padding: isMobile ? "64px 20px" : "80px 48px",
-      }}
-    >
-      <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <div style={{ textAlign: "center", marginBottom: "56px" }}>
-          <PillLabel>What We're Building</PillLabel>
-          <h2
-            style={{
-              fontSize: isMobile ? "28px" : "38px",
-              fontWeight: 900,
-              letterSpacing: "-0.035em",
-              lineHeight: 1.1,
-              color: "#fff",
-              marginBottom: "16px",
-            }}
-          >
-            A Platform Built for the{" "}
-            <GradientText>Long Game</GradientText>
-          </h2>
-          <p
-            style={{
-              fontSize: "15px",
-              color: C.dim,
-              maxWidth: "520px",
-              margin: "0 auto",
-              lineHeight: 1.75,
-            }}
-          >
-            We started with a vision and a spreadsheet. We're building toward a full creator
-            economy infrastructure for the Baltic market.
-          </p>
-        </div>
-
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : isTablet ? "1fr" : "repeat(3, 1fr)",
-            gap: "20px",
-          }}
-        >
-          {ROADMAP.map((item) => {
-            const s = STATUS_STYLES[item.status];
-            return (
-              <div
-                key={item.phase}
-                style={{
-                  padding: "28px",
-                  borderRadius: "20px",
-                  background: item.status === "live" ? "rgba(52,211,153,0.05)" : C.cardBg,
-                  border: item.status === "live"
-                    ? "1px solid rgba(52,211,153,0.3)"
-                    : item.status === "building"
-                    ? "1px solid rgba(128,97,255,0.4)"
-                    : "1px solid rgba(255,255,255,0.08)",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                }}
-              >
-                {/* Phase + status */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <span
-                    style={{
-                      fontSize: "11px",
-                      fontWeight: 700,
-                      letterSpacing: "0.12em",
-                      textTransform: "uppercase",
-                      color: "rgba(255,255,255,0.4)",
-                    }}
-                  >
-                    {item.phase}
-                  </span>
-                  <span
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "5px",
-                      fontSize: "11px",
-                      fontWeight: 600,
-                      padding: "4px 10px",
-                      borderRadius: "100px",
-                      background: s.bg,
-                      color: s.color,
-                    }}
-                  >
-                    {item.status === "live" && <span className="dot-live" style={{ width: "5px", height: "5px", background: "#34d399", boxShadow: "0 0 0 0 rgba(52,211,153,0.5)" }} />}
-                    {s.label}
-                  </span>
-                </div>
-
-                {/* Title + desc */}
-                <div>
-                  <h3
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: 800,
-                      color: "#fff",
-                      letterSpacing: "-0.02em",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p style={{ fontSize: "13px", color: C.dim, lineHeight: 1.7 }}>{item.desc}</p>
-                </div>
-
-                {/* Item list */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  {item.items.map((it) => (
-                    <div key={it} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <span
-                        style={{
-                          width: "5px",
-                          height: "5px",
-                          borderRadius: "50%",
-                          background: s.color,
-                          flexShrink: 0,
-                        }}
-                      />
-                      <span style={{ fontSize: "13px", color: C.dim2 }}>{it}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ─────────────────────────────────────────────
-// 8. COMPANY TIMELINE
-// ─────────────────────────────────────────────
-interface TimelineEvent {
-  date: string;
-  title: string;
-  desc: string;
-  accent: string;
-}
-
-const TIMELINE: TimelineEvent[] = [
-  {
-    date: "Early 2024",
-    title: "The Idea",
-    desc: "Artūrs identifies the gap in the Baltic influencer marketing space. Research begins into what a performance-based platform would look like.",
-    accent: C.indigo,
-  },
-  {
-    date: "Mid 2024",
-    title: "First Partnerships",
-    desc: "First 5 brand partners onboarded. Creator outreach begins. The model is tested manually before any platform is built.",
-    accent: C.violet,
-  },
-  {
-    date: "Late 2024",
-    title: "Team Builds Out",
-    desc: "Aleksandrs joins as Sales Executive. Creator network grows to 50+ verified profiles across Latvia and Lithuania.",
-    accent: C.magenta,
-  },
-  {
-    date: "Q1 2025",
-    title: "Creator Nexus Event",
-    desc: "First major influencer industry event in Riga — bringing together 100+ creators, brands, and marketers under one roof.",
-    accent: C.pink,
-  },
-  {
-    date: "2025 →",
-    title: "Platform Launch",
-    desc: "Full SaaS platform enters development. Goal: a complete end-to-end creator campaign management tool for the Baltic market.",
-    accent: C.violet,
-  },
-];
-
-function CompanyTimeline() {
-  const w        = useWindowWidth();
-  const isMobile = w < 640;
-
-  return (
-    <section style={outer(w)}>
-      <div style={{ textAlign: "center", marginBottom: "56px" }}>
-        <PillLabel>Our Journey</PillLabel>
+    <section style={siteOuter(w)}>
+      <div style={{ textAlign: "center", marginBottom: 52 }}>
+        <PillLabel>Community & Events</PillLabel>
         <h2
           style={{
-            fontSize: isMobile ? "28px" : "38px",
+            fontSize: isMobile ? 28 : 38,
             fontWeight: 900,
             letterSpacing: "-0.035em",
             lineHeight: 1.1,
-            color: "#fff",
+            color: C.ink,
           }}
         >
-          From Idea to{" "}
-          <GradientText>Industry Infrastructure</GradientText>
+          Where <GradientText>Creators & Brands</GradientText> Meet
         </h2>
       </div>
-
-      {/* Timeline */}
-      <div style={{ position: "relative" }}>
-        {/* Vertical line */}
-        <div
-          style={{
-            position: "absolute",
-            left: isMobile ? "20px" : "50%",
-            top: 0,
-            bottom: 0,
-            width: "1px",
-            background: "linear-gradient(180deg, rgba(128,97,255,0.6), rgba(255,51,188,0.4), rgba(128,97,255,0.1))",
-            transform: isMobile ? "none" : "translateX(-50%)",
-          }}
-        />
-
-        <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
-          {TIMELINE.map((ev, i) => {
-            const isRight = !isMobile && i % 2 === 1;
-            return (
-              <div
-                key={ev.date}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: isMobile ? "48px 1fr" : "1fr 48px 1fr",
-                  gap: isMobile ? "0 16px" : "0",
-                  marginBottom: "0",
-                  paddingBottom: i < TIMELINE.length - 1 ? "40px" : "0",
-                }}
-              >
-                {/* Left content (desktop even items) */}
-                {!isMobile && (
-                  <div
-                    style={{
-                      padding: "0 40px 0 0",
-                      textAlign: "right",
-                      opacity: isRight ? 0 : 1,
-                      pointerEvents: isRight ? "none" : "auto",
-                    }}
-                  >
-                    {!isRight && <TimelineCard ev={ev} align="right" />}
-                  </div>
-                )}
-
-                {/* Center dot */}
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    paddingTop: isMobile ? "4px" : "4px",
-                    position: "relative",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "16px",
-                      height: "16px",
-                      borderRadius: "50%",
-                      background: ev.accent,
-                      border: `3px solid #0a0612`,
-                      boxShadow: `0 0 0 1px ${ev.accent}, 0 0 16px ${ev.accent}66`,
-                      flexShrink: 0,
-                      zIndex: 1,
-                    }}
-                  />
-                </div>
-
-                {/* Right content (mobile always, desktop odd items) */}
-                <div
-                  style={{
-                    padding: isMobile ? "0" : "0 0 0 40px",
-                    opacity: !isMobile && !isRight ? 0 : 1,
-                    pointerEvents: !isMobile && !isRight ? "none" : "auto",
-                  }}
-                >
-                  {(isMobile || isRight) && <TimelineCard ev={ev} align="left" />}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: isMobile
+            ? "1fr 1fr"
+            : isTablet
+            ? "repeat(3, 1fr)"
+            : "repeat(4, 1fr)",
+          gap: 12,
+          gridAutoRows: isMobile ? "140px" : "220px",
+        }}
+      >
+        {EVENT_PHOTOS.map((photo, i) => (
+          <div
+            key={i}
+            style={{
+              position: "relative",
+              borderRadius: 16,
+              overflow: "hidden",
+              border: "1px solid rgba(124,85,255,0.14)",
+              boxShadow: C.shadowSm,
+              transition: "transform 0.2s",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = "scale(1.02)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.transform = "scale(1)")
+            }
+          >
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              fill
+              style={{ objectFit: "cover" }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                padding: "12px",
+                background:
+                  "linear-gradient(transparent, rgba(10,6,18,0.45))",
+                color: "#fff",
+                fontSize: 12,
+                fontWeight: 500,
+              }}
+            >
+              {photo.alt}
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
 }
 
-function TimelineCard({ ev, align }: { ev: TimelineEvent; align: "left" | "right" }) {
-  return (
-    <div style={{ textAlign: align }}>
-      <p
-        style={{
-          fontSize: "11px",
-          fontWeight: 700,
-          letterSpacing: "0.1em",
-          textTransform: "uppercase",
-          color: ev.accent,
-          marginBottom: "6px",
-        }}
-      >
-        {ev.date}
-      </p>
-      <h3
-        style={{
-          fontSize: "17px",
-          fontWeight: 800,
-          color: "#fff",
-          letterSpacing: "-0.02em",
-          marginBottom: "8px",
-          lineHeight: 1.2,
-        }}
-      >
-        {ev.title}
-      </h3>
-      <p style={{ fontSize: "13px", color: C.dim, lineHeight: 1.7, maxWidth: "300px", marginLeft: align === "right" ? "auto" : "0" }}>
-        {ev.desc}
-      </p>
-    </div>
-  );
-}
+// ─────────────────────────────────────────────
+// 5. SPONSORS MARQUEE
+// ─────────────────────────────────────────────
+const SPONSORS = [
+  { name: "Sponsor 1", img: "/sponsors/sponsor1.webp" },
+  { name: "Sponsor 2", img: "/sponsors/sponsor2.webp" },
+  { name: "Sponsor 3", img: "/sponsors/sponsor3.webp" },
+  { name: "Sponsor 4", img: "/sponsors/sponsor4.webp" },
+  { name: "Sponsor 5", img: "/sponsors/sponsor5.webp" },
+];
 
-// ─────────────────────────────────────────────
-// 9. JOIN THE JOURNEY  (CTA)
-// ─────────────────────────────────────────────
-function JoinThJourney() {
-  const w        = useWindowWidth();
+function SponsorsMarquee() {
+  const w = useWindowWidth();
   const isMobile = w < 640;
 
   return (
-    <section style={{ ...outer(w, 96), marginBottom: "0" }}>
+    <section style={{ marginTop: 96 }}>
+      <p
+        style={{
+          textAlign: "center",
+          fontSize: 12,
+          fontWeight: 500,
+          letterSpacing: "0.18em",
+          textTransform: "uppercase",
+          color: "rgba(10,6,18,0.28)",
+          marginBottom: 28,
+        }}
+      >
+        Trusted Partners & Event Sponsors
+      </p>
       <div
         style={{
           position: "relative",
-          borderRadius: "28px",
           overflow: "hidden",
-          padding: isMobile ? "52px 28px" : "80px 80px",
-          textAlign: "center",
+          height: isMobile ? 80 : 120,
+          borderTop: "1px solid rgba(124,85,255,0.10)",
+          borderBottom: "1px solid rgba(124,85,255,0.10)",
+          background: C.bgSub,
         }}
       >
-        {/* Background layers */}
-        <div style={{ position: "absolute", inset: 0 }}>
-          <Image src="/Skyline.webp" alt="" fill style={{ objectFit: "cover", opacity: 0.12 }} />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: `linear-gradient(90deg, ${C.bg} 0%, transparent 12%, transparent 88%, ${C.bg} 100%)`,
+            pointerEvents: "none",
+            zIndex: 2,
+          }}
+        />
+        <div
+          style={{ display: "flex", alignItems: "center", height: "100%" }}
+        >
           <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              background:
-                "radial-gradient(ellipse 80% 70% at 50% 50%, rgba(128,97,255,0.3) 0%, rgba(255,51,188,0.15) 40%, rgba(10,6,18,0.9) 70%)",
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              border: C.border,
-              borderRadius: "28px",
-            }}
-          />
-        </div>
-
-        <div style={{ position: "relative", zIndex: 1 }}>
-          <PillLabel>Join the Journey</PillLabel>
-
-          <h2
-            style={{
-              fontSize: isMobile ? "30px" : "46px",
-              fontWeight: 900,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.1,
-              color: "#fff",
-              marginBottom: "16px",
-            }}
+            className="marquee-track"
+            style={{ alignItems: "center" }}
           >
-            The Baltic Creator Economy
-            <br />
-            <GradientText>Is Just Getting Started</GradientText>
-          </h2>
-
-          <p
-            style={{
-              fontSize: isMobile ? "14px" : "16px",
-              color: C.dim,
-              maxWidth: "500px",
-              margin: "0 auto 40px",
-              lineHeight: 1.75,
-            }}
-          >
-            Whether you're a brand ready to reach authentic Baltic audiences, or
-            a creator ready to build a real income from your work — your place is
-            in this network.
-          </p>
-
-          {/* Dual CTA */}
-          <div
-            style={{
-              display: "flex",
-              gap: "14px",
-              justifyContent: "center",
-              flexWrap: "wrap",
-              marginBottom: "32px",
-            }}
-          >
-            <Btn href="mailto:brands@nexfluence.eu" variant="primary">
-              I'm a Brand →
-            </Btn>
-            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">
-              I'm a Creator →
-            </Btn>
-          </div>
-
-          {/* Social links */}
-          <div
-            style={{
-              display: "flex",
-              gap: "16px",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)" }}>Follow along:</p>
-            <a
-              href="https://www.instagram.com/nexfluence.eu"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: "13px",
-                fontWeight: 600,
-                color: C.pink,
-                textDecoration: "none",
-                transition: "opacity 0.18s",
-              }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.7")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
-            >
-              @nexfluence.eu
-            </a>
-            <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "12px" }}>·</span>
-            <a
-              href="https://ig.me/j/AbanIlYdHEhj6sI1"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                fontSize: "13px",
-                fontWeight: 600,
-                color: C.violet,
-                textDecoration: "none",
-                transition: "opacity 0.18s",
-              }}
-              onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "0.7")}
-              onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.opacity = "1")}
-            >
-              Creator Community
-            </a>
+            {[...SPONSORS, ...SPONSORS].map((s, i) => (
+              <div
+                key={`${s.name}-${i}`}
+                style={{
+                  flexShrink: 0,
+                  margin: isMobile ? "0 18px" : "0 28px",
+                  display: "flex",
+                  alignItems: "center",
+                  height: isMobile ? 48 : 72,
+                }}
+              >
+                <Image
+                  src={s.img}
+                  alt={s.name}
+                  width={isMobile ? 80 : 120}
+                  height={isMobile ? 48 : 72}
+                  style={{
+                    objectFit: "contain",
+                    opacity: 0.45,
+                    filter: "grayscale(1)",
+                    transition:
+                      "opacity 0.2s, filter 0.2s, transform 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    const el = e.currentTarget as HTMLImageElement;
+                    el.style.opacity = "1";
+                    el.style.filter = "none";
+                    el.style.transform = "scale(1.05)";
+                  }}
+                  onMouseLeave={(e) => {
+                    const el = e.currentTarget as HTMLImageElement;
+                    el.style.opacity = "0.45";
+                    el.style.filter = "grayscale(1)";
+                    el.style.transform = "scale(1)";
+                  }}
+                />
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -1572,75 +1268,230 @@ function JoinThJourney() {
 }
 
 // ─────────────────────────────────────────────
-// 10. FOOTER  (same as homepage)
+// 6. FINAL CTA (identical to homepage)
+// ─────────────────────────────────────────────
+function FinalCTA() {
+  const w = useWindowWidth();
+  const isMobile = w < 640;
+  return (
+    <section style={{ ...siteOuter(w, 96), marginBottom: 0 }}>
+      <div
+        id="contact"
+        style={{
+          position: "relative",
+          borderRadius: 24,
+          overflow: "hidden",
+          padding: isMobile ? "48px 28px" : "68px 72px",
+          background: `linear-gradient(135deg, ${C.violet}0e, ${C.pink}08)`,
+          border: C.borderS,
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(ellipse 70% 60% at 50% 50%, rgba(124,85,255,0.11) 0%, rgba(255,51,188,0.05) 40%, transparent 70%)",
+            pointerEvents: "none",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "linear-gradient(rgba(124,85,255,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(124,85,255,0.055) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+            pointerEvents: "none",
+          }}
+        />
+        <div style={{ position: "relative", zIndex: 1 }}>
+          <PillLabel>Get in Touch</PillLabel>
+          <h2
+            style={{
+              fontSize: isMobile ? 28 : 42,
+              fontWeight: 900,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.1,
+              color: C.ink,
+              marginBottom: 14,
+            }}
+          >
+            Want to Work with Us?
+            <br />
+            <GradientText>Let’s Build Something Great</GradientText>
+          </h2>
+          <p
+            style={{
+              fontSize: isMobile ? 14 : 16,
+              color: C.inkDim,
+              maxWidth: 460,
+              margin: "0 auto 36px",
+              lineHeight: 1.75,
+            }}
+          >
+            Whether you’re a brand, creator, or potential partner — we’d
+            love to hear from you.
+          </p>
+          <div
+            style={{
+              display: "flex",
+              gap: 12,
+              justifyContent: "center",
+              flexWrap: "wrap",
+            }}
+          >
+            <Btn href="mailto:brands@nexfluence.eu" variant="primary">
+              I’m a Brand →
+            </Btn>
+            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">
+              I’m a Creator →
+            </Btn>
+          </div>
+          <p
+            style={{
+              fontSize: 12,
+              color: "rgba(10,6,18,0.3)",
+              marginTop: 18,
+            }}
+          >
+            No commitment required · Response within 24 hours
+          </p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────
+// 7. FOOTER (identical to homepage)
 // ─────────────────────────────────────────────
 const FOOTER_LINKS = {
-  Platform: ["Creator Discovery", "Campaign Management", "Analytics", "Affiliate Programs"],
-  Company:  ["About Us", "Blog", "Careers", "Press"],
-  Contact:  ["brands@nexfluence.eu", "creators@nexfluence.eu", "Instagram", "LinkedIn"],
+  Platform: [
+    "Creator Discovery",
+    "Campaign Management",
+    "Analytics",
+    "Affiliate Programs",
+  ],
+  Company: ["About Us", "Blog", "Careers", "Press"],
+  Contact: [
+    "brands@nexfluence.eu",
+    "creators@nexfluence.eu",
+    "Instagram",
+    "LinkedIn",
+  ],
 };
 
 function Footer() {
-  const w        = useWindowWidth();
+  const w = useWindowWidth();
   const isMobile = w < 640;
-
   return (
     <footer
       style={{
-        maxWidth: "1200px",
+        marginTop: 96,
+        borderTop: "1px solid rgba(124,85,255,0.12)",
+        maxWidth: SITE_MAX_W,
         margin: "96px auto 0",
-        borderTop: "1px solid rgba(128,97,255,0.15)",
-        padding: isMobile ? "48px 20px 32px" : "64px 48px 40px",
+        padding: isMobile
+          ? "48px 20px 32px"
+          : w < 900
+          ? "56px 32px 36px"
+          : "60px 48px 36px",
+        background: C.bg,
       }}
     >
       <div
         style={{
           display: "grid",
           gridTemplateColumns: isMobile ? "1fr 1fr" : "2fr 1fr 1fr 1fr",
-          gap: isMobile ? "36px 24px" : "40px",
-          marginBottom: "56px",
+          gap: isMobile ? "32px 20px" : 36,
+          marginBottom: 48,
         }}
       >
-        {/* Brand */}
         <div style={{ gridColumn: isMobile ? "1 / -1" : "auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-            <Image src="/Nex.webp" alt="Nexfluence" width={40} height={40} style={{ borderRadius: "10px" }} />
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              marginBottom: 14,
+            }}
+          >
+            <Image
+              src="/Nex.webp"
+              alt="Nexfluence"
+              width={38}
+              height={38}
+              style={{ borderRadius: 9 }}
+            />
             <div>
-              <p style={{ fontSize: "16px", fontWeight: 800, color: "#fff", letterSpacing: "-0.02em" }}>Nexfluence</p>
-              <p style={{ fontSize: "10px", color: C.pink, letterSpacing: "0.08em" }}>CREATOR NEXUS</p>
+              <p
+                style={{
+                  fontSize: 15,
+                  fontWeight: 800,
+                  color: C.ink,
+                  letterSpacing: "-0.02em",
+                  margin: 0,
+                }}
+              >
+                Nexfluence
+              </p>
+              <p
+                style={{
+                  fontSize: 10,
+                  color: C.pink,
+                  letterSpacing: "0.08em",
+                  margin: 0,
+                }}
+              >
+                CREATOR NEXUS
+              </p>
             </div>
           </div>
-          <p style={{ fontSize: "13px", color: C.dim, lineHeight: 1.75, maxWidth: "240px" }}>
-            Latvia's first performance-based influencer marketing platform connecting brands with
-            authentic Baltic creators.
+          <p
+            style={{
+              fontSize: 13,
+              color: C.inkDim,
+              lineHeight: 1.75,
+              maxWidth: 230,
+            }}
+          >
+            Latvia’s first performance‑based influencer marketing platform
+            connecting brands with authentic Baltic creators.
           </p>
-          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+          <div style={{ display: "flex", gap: 9, marginTop: 18 }}>
             {["IG", "LI", "TT"].map((s) => (
               <a
                 key={s}
                 href="#"
                 style={{
-                  width: "34px",
-                  height: "34px",
-                  borderRadius: "8px",
-                  background: C.cardBg,
+                  width: 32,
+                  height: 32,
+                  borderRadius: 7,
+                  background: C.bgSub,
                   border: C.border,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "11px",
+                  fontSize: 10,
                   fontWeight: 700,
-                  color: C.dim,
+                  color: C.inkDim,
                   textDecoration: "none",
                   transition: "color 0.18s, border-color 0.18s",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = "#fff";
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(255,122,195,0.4)";
+                  (e.currentTarget as HTMLAnchorElement).style.color = C.ink;
+                  (
+                    e.currentTarget as HTMLAnchorElement
+                  ).style.borderColor = "rgba(255,51,188,0.38)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.color = C.dim;
-                  (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(128,97,255,0.35)";
+                  (e.currentTarget as HTMLAnchorElement).style.color =
+                    C.inkDim;
+                  (
+                    e.currentTarget as HTMLAnchorElement
+                  ).style.borderColor = "rgba(124,85,255,0.18)";
                 }}
               >
                 {s}
@@ -1648,29 +1499,39 @@ function Footer() {
             ))}
           </div>
         </div>
-
         {Object.entries(FOOTER_LINKS).map(([col, links]) => (
           <div key={col}>
             <p
               style={{
-                fontSize: "11px",
+                fontSize: 11,
                 fontWeight: 700,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
-                color: "rgba(255,255,255,0.4)",
-                marginBottom: "16px",
+                color: "rgba(10,6,18,0.35)",
+                marginBottom: 14,
               }}
             >
               {col}
             </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 9 }}>
               {links.map((link) => (
                 <a
                   key={link}
                   href="#"
-                  style={{ fontSize: "13px", color: C.dim, textDecoration: "none", transition: "color 0.18s" }}
-                  onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = "#fff")}
-                  onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.color = C.dim)}
+                  style={{
+                    fontSize: 13,
+                    color: C.inkDim,
+                    textDecoration: "none",
+                    transition: "color 0.18s",
+                  }}
+                  onMouseEnter={(e) =>
+                    ((e.currentTarget as HTMLAnchorElement).style.color =
+                      C.ink)
+                  }
+                  onMouseLeave={(e) =>
+                    ((e.currentTarget as HTMLAnchorElement).style.color =
+                      C.inkDim)
+                  }
                 >
                   {link}
                 </a>
@@ -1679,25 +1540,37 @@ function Footer() {
           </div>
         ))}
       </div>
-
-      {/* Bottom bar */}
       <div
         style={{
-          borderTop: "1px solid rgba(128,97,255,0.1)",
-          paddingTop: "24px",
+          borderTop: "1px solid rgba(124,85,255,0.08)",
+          paddingTop: 22,
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: "12px",
+          gap: 10,
         }}
       >
-        <p style={{ fontSize: "12px", color: "rgba(255,255,255,0.25)" }}>
+        <p
+          style={{
+            fontSize: 12,
+            color: "rgba(10,6,18,0.28)",
+            margin: 0,
+          }}
+        >
           © 2026 Nexfluence SIA. Registered in Latvia. All rights reserved.
         </p>
-        <div style={{ display: "flex", gap: "20px" }}>
+        <div style={{ display: "flex", gap: 18 }}>
           {["Privacy Policy", "Terms of Service"].map((l) => (
-            <a key={l} href="#" style={{ fontSize: "12px", color: "rgba(255,255,255,0.3)", textDecoration: "none" }}>
+            <a
+              key={l}
+              href="#"
+              style={{
+                fontSize: 12,
+                color: "rgba(10,6,18,0.30)",
+                textDecoration: "none",
+              }}
+            >
               {l}
             </a>
           ))}
@@ -1712,18 +1585,47 @@ function Footer() {
 // ─────────────────────────────────────────────
 export default function AboutPage() {
   return (
-    <div style={{ background: "#0a0612", overflowX: "hidden" }}>
+    <div style={{ background: C.bg, overflowX: "hidden" }}>
       <Header />
-      <PageHero />
-      <OriginStory />
-      <MissionBlock />
-      <CoreValues />
-      <TheTeam />
-      <WhatWereBuilding />
-      <CompanyTimeline />
-      <JoinThJourney />
+      <FounderHero />
+      <OurStory />
+      <Team />
+      <Events />
+      <SponsorsMarquee />
+      <FinalCTA />
       <Footer />
-      <div style={{ height: "80px" }} />
     </div>
   );
 }
+
+/*
+ * ═══════════════════════════════════════════════════════════════════
+ * REQUIRED CSS (globals.css) — same as homepage
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * @layer utilities {
+ *   .marquee-track {
+ *     display: flex; width: max-content;
+ *     animation: marquee-left 28s linear infinite;
+ *   }
+ *   .marquee-track:hover { animation-play-state: paused; }
+ * }
+ * @keyframes marquee-left {
+ *   from { transform: translateX(0); }
+ *   to   { transform: translateX(-50%); }
+ * }
+ * ═══════════════════════════════════════════════════════════════════
+ *
+ * IMAGE PLACEHOLDER LEGEND (place your own images)
+ * ──────────────────────────────────────────────────
+ *  /founder.webp           → high‑res founder portrait
+ *  /team/member1.webp      → team member 1
+ *  /team/member2.webp      → team member 2
+ *  ... up to member6
+ *  /events/influencer1.webp→ event photo 1
+ *  /events/influencer2.webp→ event photo 2
+ *  ... up to influencer6
+ *  /sponsors/sponsor1.webp → sponsor logo 1
+ *  ... up to sponsor5
+ * ═══════════════════════════════════════════════════════════════════
+ */
