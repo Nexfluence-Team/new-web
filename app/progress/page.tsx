@@ -730,7 +730,7 @@ export default function ProgressPage() {
       <footer
         style={{
           textAlign: "center",
-          padding: "32px 0",
+          padding: "32px 0", 
           fontFamily: "'Rubik', var(--font-rubik), sans-serif",
           fontSize: 13,
           color: C.inkDim,
