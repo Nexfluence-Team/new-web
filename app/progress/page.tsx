@@ -323,14 +323,13 @@ function ProgressHero() {
         boxSizing: "border-box",
         position: "relative", zIndex: 1, textAlign: "center",
       }}>
-        <PillLabel>Our Journey</PillLabel>
         <h1 style={{
           fontSize: isMobile ? 32 : isTablet ? 46 : 56,
           fontWeight: 900, letterSpacing: "-0.04em",
           lineHeight: 1.05, color: C.ink,
           margin: 0, marginBottom: 20, fontFamily: FONT,
         }}>
-          The Nexfluence <GradientText>Journey</GradientText>
+          The <GradientText>Journey</GradientText>
         </h1>
         <p style={{
           fontSize: isMobile ? 15 : 17, color: C.inkDim2,
@@ -630,180 +629,147 @@ function MonthBlock({
 // ─────────────────────────────────────────────────────────────────────────────
 // TIMELINE DATA
 //
-// ▸ ORDER: newest month FIRST, oldest month LAST.
-// ▸ Each month has an `entries` array — add as many events as needed.
-// ▸ To add a new event to an existing month: add an object to its `entries`.
-// ▸ To add a brand new month: paste a new object at the TOP of this array.
+// ▸ ORDER: newest event FIRST, oldest event LAST.
+// ▸ Each object represents one milestone (treated as a “month” for layout).
+// ▸ Only the very latest entry uses month = "This Month".
+// ▸ All other entries use the milestone heading as the month label,
+//   giving each event its own distinct heading.
 //
 // Entry shape:
 // {
-//   title: "Plain string" | <JSX with colored spans>,
-//   images: [
-//     { src: "/progress/filename.webp", caption: "Caption text" },
-//     // 1–3 images supported
-//   ],
-//   description: "Paragraph of text.",
+//   month: "Heading text",
+//   entries: [
+//     {
+//       title: ReactNode (sub‑title),
+//       images: [{ src, caption }] – 1 image for non‑events, 2 for events
+//       description: string
+//     }
+//   ]
 // }
 // ─────────────────────────────────────────────────────────────────────────────
 const TIMELINE = [
-  // ── MOST RECENT MONTH ─────────────────────────────────────────────────────
+  // ── LATEST MILESTONE (THIS MONTH) ────────────────────────────────────────
   {
     month: "This Month",
     entries: [
-      // ── Event 1 ──
       {
         title: (
           <>
-            <span style={{ color: C.pink }}>Creator Nexus 2.0</span> Preparation
+            <span style={{ color: C.pink }}>Baltic's Largest</span> Creator Networking Event
           </>
         ),
         images: [
-          { src: "/progress/may-prep1.webp", caption: "Venue walk‑through"       },
-          { src: "/progress/may-prep2.webp", caption: "Speaker lineup planning"  },
+          { src: "/images/Header.webp", caption: "100 Content Creators" },
+          { src: "/images/Food.webp", caption: "Brands Participating for Reach" },
         ],
         description:
-          "We're gearing up for our biggest event yet — a full‑day summit with international speakers, brand matchmaking sessions, and live content creation.",
+          "We brought together hundreds of creators, brands, and industry leaders for the largest creator networking event the Baltics have ever seen.",
       },
-      // ── Event 2 ──
-      {
-        title: (
-          <>
-            Platform <span style={{ color: C.violet }}>Beta Launch</span>
-          </>
-        ),
-        images: [
-          { src: "/progress/may-beta.webp", caption: "Beta dashboard preview" },
-        ],
-        description:
-          "Our closed beta went live to 30 selected brand partners, giving them early access to the campaign management dashboard and creator discovery tools.",
-      },
-      // ── ADD NEW EVENT HERE — copy the block above and paste below ──
     ],
   },
 
-  // ── APRIL 2026 ────────────────────────────────────────────────────────────
+  // ── SIGNED LARGEST INFLUENCER CAMPAIGN ──────────────────────────────────
   {
-    month: "April 2026",
+    month: "Signed Baltics' Largest Influencer Campaign",
     entries: [
-      // ── Event 1 ──
       {
         title: (
           <>
-            <span style={{ color: C.violet }}>Partnership</span> with LIMA
+            100+ Influencers, <span style={{ color: C.violet }}>International Brand</span>
           </>
         ),
         images: [
-          { src: "/progress/apr-lima.webp", caption: "Signed MOU with LIMA" },
+          { src: "/images/Kinetics.webp", caption: "Kinetics Brand Partnership" },
         ],
         description:
-          "Nexfluence became the official influencer marketing partner for the Latvian Interactive Marketing Association, a major industry milestone.",
+          "We signed the Baltics' largest influencer marketing campaign, partnering with a major international kinetics brand and involving over 100 hand‑picked creators.",
       },
-      // ── Event 2 ──
-      {
-        title: (
-          <>
-            <span style={{ color: C.pink }}>Creator Fund</span> Announced
-          </>
-        ),
-        images: [
-          { src: "/progress/apr-fund.webp", caption: "Announcement at Riga TechHub" },
-        ],
-        description:
-          "We announced a €50,000 creator grant fund to support emerging Baltic content creators building original campaigns on the platform.",
-      },
-      // ── ADD NEW EVENT HERE ──
     ],
   },
 
-  // ── MARCH 2026 ────────────────────────────────────────────────────────────
+  // ── FIRST EVENT IN RIGA ─────────────────────────────────────────────────
   {
-    month: "March 2026",
+    month: "First Event in Riga",
     entries: [
-      // ── Event 1 ──
       {
         title: (
           <>
-            Launched <span style={{ color: C.pink }}>Affiliate Engine</span>
+            Sponsored by <span style={{ color: C.pink }}>5+ Brands</span>
           </>
         ),
         images: [
-          { src: "/progress/mar-affiliate.webp", caption: "Dashboard screenshot" },
+          { src: "/images/Ice Cream.webp", caption: "Sponsored by Brands" },
+          { src: "/images/Last Event.webp", caption: "Appreciated by Creators" },
         ],
         description:
-          "We released the first version of our performance tracking tool, allowing brands to see exactly how each creator impacts their bottom line.",
+          "Our very first event in Riga attracted sponsorship from over five national and international brands, setting the stage for everything that followed.",
       },
-      // ── ADD NEW EVENT HERE ──
     ],
   },
 
-  // ── FEBRUARY 2026 ─────────────────────────────────────────────────────────
+  // ── RED BULL SPONSORSHIP ────────────────────────────────────────────────
   {
-    month: "February 2026",
+    month: "Red Bull Sponsorship",
     entries: [
-      // ── Event 1 ──
-      {
-        title: "Onboarded 50+ New Creators",
-        images: [
-          { src: "/progress/feb-creators.webp", caption: "New creator headshots" },
-        ],
-        description:
-          "Our verification team carefully selected top talent, expanding the Nexfluence network to over 150 vetted influencers across the Baltics.",
-      },
-      // ── ADD NEW EVENT HERE ──
-    ],
-  },
-
-  // ── JANUARY 2026 ──────────────────────────────────────────────────────────
-  {
-    month: "January 2026",
-    entries: [
-      // ── Event 1 ──
       {
         title: (
           <>
-            <span style={{ color: C.pink }}>Riga Creator Nexus</span> Event
+            Partnership with <span style={{ color: C.pink }}>Red Bull</span>
           </>
         ),
         images: [
-          { src: "/progress/jan-event1.webp",  caption: "Packed venue on opening night"   },
-          { src: "/progress/jan-event2.webp",  caption: "Creators & brands networking"    },
-          { src: "/progress/jan-event3.webp",  caption: "Keynote session"                 },
+          { src: "/images/RedBull.webp", caption: "Red Bull as Our Sponsoring Partner" },
         ],
         description:
-          "Our first large‑scale event brought together over 150 creators and 20 brands, sparking dozens of new collaborations right on the spot.",
+          "Red Bull came on board as an official sponsor, giving our creators access to world‑class brand collaboration opportunities right from the start.",
       },
-      // ── Event 2 ──
-      {
-        title: (
-          <>
-            Campaign with{" "}
-            <span style={{ color: C.violet }}>Red Bull</span>
-          </>
-        ),
-        images: [
-          { src: "/progress/jan-redbull.webp", caption: "Red Bull activation at the event" },
-        ],
-        description:
-          "Red Bull partnered with us for an exclusive product launch, leveraging our network of trusted Baltic creators for authentic promotion.",
-      },
-      // ── ADD NEW EVENT HERE ──
     ],
   },
 
-  // ── DECEMBER 2025 — OLDEST ────────────────────────────────────────────────
+
+
+  // ── WON RIGA STARTUP HOUSE COMPETITION ──────────────────────────────────
   {
-    month: "December 2025",
+    month: "Won Riga Startup House Competition",
     entries: [
-      // ── Event 1 ──
       {
-        title: "Company Incorporated",
+        title: "Startup Competition Victory",
         images: [
-          { src: "/progress/dec-incorporation.webp", caption: "Official registration documents" },
+          { src: "/images/Winner-Nex.webp", caption: "Secured our Winning Position" },
         ],
         description:
-          "Nexfluence was officially registered in Riga, Latvia, marking the beginning of our journey to reshape the Baltic creator economy.",
+          "We beat tough competition to win the Riga Startup House contest, gaining visibility and valuable mentorship in the local ecosystem. And We received our first angel investment, a strong vote of confidence that allowed us to accelerate platform development and creator outreach.",
       },
-      // ── ADD NEW EVENT HERE ──
+    ],
+  },
+
+  // ── FEATURED IN VESTBEE ─────────────────────────────────────────────────
+  {
+    month: "Featured in Vestbee",
+    entries: [
+      {
+        title: "International Recognition",
+        images: [
+          { src: "/images/Vestbee.webp", caption: "Featured in Vestbee as Startup of the Month" },
+        ],
+        description:
+          "Just one month after incorporation, Nexfluence was featured on Vestbee — a leading startup discovery platform — putting us on the radar of investors and partners.",
+      },
+    ],
+  },
+
+  // ── COMPANY INCORPORATED (OLDEST) ───────────────────────────────────────
+  {
+    month: "Company Incorporated",
+    entries: [
+      {
+        title: "Nexfluence Founded",
+        images: [
+          { src: "/images/Nex-Banner.webp", caption: "Our Incorporation" },
+        ],
+        description:
+          "Our Voyage began with the official incorporation of the company in Riga, Latvia. The foundation for everything we're building today.",
+      },
     ],
   },
 ];

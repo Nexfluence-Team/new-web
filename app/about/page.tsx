@@ -419,7 +419,7 @@ function HeroBanner() {
               textShadow: "0 2px 20px rgba(0,0,0,0.4)",
               maxWidth: isMobile ? 280 : 560,
             }}>
-              Building the Future of Creator Economy in the Baltics
+              Building the Future of Creator Economy
             </h1>
           </div>
         </div>
