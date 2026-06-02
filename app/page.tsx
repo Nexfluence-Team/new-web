@@ -345,7 +345,7 @@ function Hero() {
 
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 36, flexWrap: "wrap" }}>
             <div style={{ display: "flex" }}>
-              {["/Speaker 1.webp", "/Speaker 2.webp"].map((src, i) => (
+              {["/images/Cindy.webp", "/Speaker 2.webp"].map((src, i) => (
                 <div key={i} style={{
                   width: 32, height: 32, borderRadius: "50%", overflow: "hidden",
                   border: "2px solid #fff", marginLeft: i === 0 ? 0 : -10,
@@ -404,7 +404,7 @@ function HeroVisual() {
         border: "1px solid rgba(255,51,188,0.2)",
         boxShadow: "0 24px 64px rgba(124,85,255,0.16)",
       }}>
-        <Image src="/Skyline.webp" alt="Riga" fill style={{ objectFit: "cover" }} priority />
+        <Image src="/images/Header.webp" alt="Riga" fill style={{ objectFit: "cover" }} priority />
         <div style={{
           position: "absolute", inset: 0,
           background: "linear-gradient(135deg, rgba(124,85,255,0.25) 0%, rgba(255,51,188,0.12) 50%, transparent 70%)",
@@ -432,7 +432,7 @@ function HeroVisual() {
         boxShadow: "0 12px 40px rgba(124,85,255,0.14)",
       }}>
         <div style={{ position: "relative", height: 112 }}>
-          <Image src="/Speaker 1.webp" alt="Creator" fill style={{ objectFit: "cover", objectPosition: "top" }} />
+          <Image src="/images/Cindy.webp" alt="Creator" fill style={{ objectFit: "cover", objectPosition: "top" }} />
         </div>
         <div style={{ padding: "10px 13px 14px" }}>
           <p style={{ fontSize: 13, fontWeight: 700, color: C.ink, margin: 0 }}>Cindy Bokāne</p>
@@ -888,7 +888,7 @@ function HowItWorks() {
 interface CreatorProfile { name: string; handle: string; niche: string; photo: string; followers: string; platforms: string[]; location: string; }
 
 const CREATORS: CreatorProfile[] = [
-  { name: "Cindy Bokāne",    handle: "@cindywanderlust", niche: "Travel & Lifestyle",    photo: "/Speaker 1.webp", followers: "84K", platforms: ["IG","YT"], location: "Riga, LV" },
+  { name: "Cindy Bokāne",    handle: "@cindywanderlust", niche: "Travel & Lifestyle",    photo: "/images/Cindy.webp", followers: "84K", platforms: ["IG","YT"], location: "Riga, LV" },
   { name: "Armands Simsons", handle: "@armandssimsons", niche: "Business & Startups",   photo: "/Speaker 2.webp", followers: "61K", platforms: ["IG","LI"], location: "Riga, LV" },
   { name: "Event Creator",   handle: "@nexcreator",     niche: "Food & Hospitality",    photo: "/Food.webp",      followers: "32K", platforms: ["IG","TT"], location: "Tallinn, EE" },
   { name: "Space Creator",   handle: "@spacecreator",   niche: "Design & Architecture", photo: "/Space.webp",     followers: "47K", platforms: ["IG"],      location: "Vilnius, LT" },
@@ -979,7 +979,7 @@ function FeaturedCreators() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ display: "flex" }}>
-            {["/Speaker 1.webp", "/Speaker 2.webp", "/Food.webp"].map((src, i) => (
+            {["/images/Cindy.webp", "/Speaker 2.webp", "/Food.webp"].map((src, i) => (
               <div key={i} style={{
                 width: 34, height: 34, borderRadius: "50%", overflow: "hidden",
                 border: "2px solid #fff", marginLeft: i === 0 ? 0 : -9, position: "relative",
