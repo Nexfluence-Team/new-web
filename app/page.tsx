@@ -190,7 +190,7 @@ function Btn({ href, onClick, variant, children, style }: BtnProps) {
 // ─────────────────────────────────────────────
 const NAV_LINKS = [
   { label: "Marketplace", href: "/marketplace" },
-  // { label: "Creators",    href: "/creators"    },
+  { label: "Creators",    href: "/creators"    },
   { label: "About Us",    href: "/about"       },
   { label: "Growth",      href: "/progress"    },
 ];
@@ -222,6 +222,7 @@ function Header() {
         padding: isMobile ? "16px 20px" : w < 900 ? "18px 32px" : "18px 48px",
         display: "flex", alignItems: "center", gap: 12,
       }}>
+        {/* Logo image only — no company name text */}
         <a href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0 }}>
           <Image src="/Nex.webp" alt="Nexfluence" width={isMobile ? 34 : 40} height={isMobile ? 34 : 40} style={{ borderRadius: 10 }} />
         </a>
@@ -243,7 +244,6 @@ function Header() {
         <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center" }}>
           {!isMobile && (
             <>
-              {/* <Btn href="#how-it-works" variant="ghost" style={{ padding: "10px 20px", fontSize: 13 }}>For Creators</Btn> */}
               <Btn href="/contact" variant="primary" style={{ padding: "10px 20px", fontSize: 13 }}>Contact Us</Btn>
             </>
           )}
@@ -272,7 +272,7 @@ function Header() {
           ))}
           <a href="#how-it-works" onClick={() => setMenuOpen(false)} style={{
             fontSize: 15, fontWeight: 600, color: C.pink, textDecoration: "none",
-          }}>For Creators </a>
+          }}>For Creators</a>
         </div>
       )}
     </header>
@@ -323,6 +323,7 @@ function Hero() {
         position: "relative", zIndex: 1,
       }}>
         <div>
+          {/* Plain text eyebrow — no capsule, no NEW badge */}
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 10,
             fontSize: isMobile ? 10 : 11, fontWeight: 600,
@@ -357,7 +358,7 @@ function Hero() {
           </p>
 
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <Btn href="/contact" variant="primary">Start a Campaign </Btn>
+            <Btn href="/contact" variant="primary">Start a Campaign</Btn>
             <Btn href="/contact" variant="ghost">Join as Creator</Btn>
           </div>
 
@@ -874,7 +875,7 @@ function HowItWorks() {
 
       <div style={{ marginTop: 52, textAlign: "center" }}>
         <Btn href={tab === "brands" ? "#contact" : "#apply"} variant="primary">
-          {tab === "brands" ? "Start a Campaign " : "Apply to Join "}
+          {tab === "brands" ? "Start a Campaign" : "Apply to Join"}
         </Btn>
       </div>
     </section>
@@ -964,7 +965,7 @@ function FeaturedCreators() {
             Meet the Voices That<br /><GradientText>Move the Baltics</GradientText>
           </h2>
         </div>
-        <Btn href="#how-it-works" variant="ghost" style={{ flexShrink: 0 }}>Join the Network </Btn>
+        <Btn href="#how-it-works" variant="ghost" style={{ flexShrink: 0 }}>Join the Network</Btn>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : isTablet ? "1fr 1fr" : "repeat(4, 1fr)", gap: 14 }}>
@@ -1000,7 +1001,6 @@ function FeaturedCreators() {
 
 // ─────────────────────────────────────────────
 // 7. PARTNERS MARQUEE — full-bleed, edge-to-edge
-// Colored logos, glow, animated via GLOBAL_CSS <style> tag
 // ─────────────────────────────────────────────
 const BRANDS = [
   { name: "Artisan Street Bakery", img: "/Artisan Street Bakery.webp" },
@@ -1034,7 +1034,6 @@ function PartnersMarquee() {
         Trusted by Baltic Brands
       </p>
 
-      {/* Full-bleed strip — no side padding, no side borders */}
       <div style={{
         position: "relative",
         overflow: "hidden",
@@ -1043,7 +1042,6 @@ function PartnersMarquee() {
         borderBottom: "1px solid rgba(124,85,255,0.22)",
         background:   "rgba(124,85,255,0.03)",
       }}>
-        {/* Ambient glow */}
         <div style={{
           position: "absolute", inset: 0,
           background: "radial-gradient(ellipse at 50% 50%, rgba(124,85,255,0.18) 0%, rgba(255,51,188,0.10) 35%, transparent 65%)",
@@ -1051,14 +1049,12 @@ function PartnersMarquee() {
           pointerEvents: "none", zIndex: 1,
         }} />
 
-        {/* Edge fade */}
         <div style={{
           position: "absolute", inset: 0,
           background: `linear-gradient(90deg, ${C.bg} 0%, transparent 6%, transparent 94%, ${C.bg} 100%)`,
           pointerEvents: "none", zIndex: 2,
         }} />
 
-        {/* Scrolling tape — animated via .marquee-track in GLOBAL_CSS */}
         <div className="marquee-track">
           {items.map((b, i) => (
             <div
@@ -1282,12 +1278,27 @@ function WhyTestimonial({ style }: { style?: CSSProps }) {
         Working with Nexfluence was the first time we actually knew where every euro of our influencer budget went — and it came back 3× over.
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
-        <div style={{ width: 38, height: 38, borderRadius: "50%", background: C.grad, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: 15, fontWeight: 700, color: "#fff" }}>B</span>
-        </div>
+        <div
+  style={{
+    width: 38,
+    height: 38,
+    borderRadius: "50%",
+    overflow: "hidden",
+    position: "relative",
+  }}
+>
+  <Image
+    src="/images/Kinetics-leader.webp"
+    alt="Profile"
+    fill
+    style={{
+      objectFit: "cover",
+    }}
+  />
+</div>
         <div>
           <p style={{ fontSize: 13, fontWeight: 700, color: C.ink, margin: 0 }}>Brand Partner</p>
-          <p style={{ fontSize: 12, color: C.inkDim, margin: 0 }}>Riga F&B Sector</p>
+          <p style={{ fontSize: 12, color: C.inkDim, margin: 0 }}>Latvia, Beauty & Care</p>
         </div>
         <div style={{ marginLeft: "auto", display: "flex", gap: 2 }}>
           {Array.from({ length: 5 }).map((_, i) => <span key={i} style={{ fontSize: 13, color: "#f5a623" }}>★</span>)}
@@ -1330,8 +1341,8 @@ function FinalCTA() {
             Whether you're a brand looking to scale or a creator ready to monetize — there's a place for you in the Nexfluence network.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Btn href="mailto:brands@nexfluence.eu" variant="primary">I'm a Brand </Btn>
-            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">I'm a Creator </Btn>
+            <Btn href="mailto:brands@nexfluence.eu" variant="primary">I'm a Brand</Btn>
+            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">I'm a Creator</Btn>
           </div>
           <p style={{ fontSize: 12, color: "rgba(10,6,18,0.3)", marginTop: 18 }}>
             No commitment required · Response within 24 hours
@@ -1347,7 +1358,7 @@ function FinalCTA() {
 // ─────────────────────────────────────────────
 const FOOTER_LINKS = {
   Platform: ["Creator Discovery", "Campaign Management", "Analytics", "Affiliate Programs"],
-  Company:  ["About Us", "Blog", "Careers", "Press"],
+  Company:  ["About Us", "Growth", "Careers", "Press"],
   Contact:  ["brands@nexfluence.eu", "creators@nexfluence.eu", "Instagram", "LinkedIn"],
 };
 
@@ -1375,7 +1386,7 @@ function Footer() {
             </div>
           </div>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.75, maxWidth: 230 }}>
-            Latvia's first performance-based influencer marketing platform connecting brands with authentic Baltic creators.
+            The influencer marketing marketplace for the Baltics, connecting businesses, creators and agencies across Latvia, Lithuania and Estonia, with contracts and payments handled safely in one place.
           </p>
           <div style={{ display: "flex", gap: 9, marginTop: 18 }}>
             {["IG", "LI", "TT"].map((s) => (
@@ -1407,7 +1418,9 @@ function Footer() {
         ))}
       </div>
       <div style={{ borderTop: "1px solid rgba(124,85,255,0.08)", paddingTop: 22, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
-        <p style={{ fontSize: 12, color: "rgba(10,6,18,0.28)", margin: 0 }}>© 2026 Nexfluence SIA. Registered in Latvia. All rights reserved.</p>
+        <p style={{ fontSize: 12, color: "rgba(10,6,18,0.28)", margin: 0 }}>
+          © {new Date().getFullYear()} Nexfluence. Registered in Europe. All rights reserved.
+        </p>
         <div style={{ display: "flex", gap: 18 }}>
           {["Privacy Policy", "Terms of Service"].map((l) => (
             <a key={l} href="#" style={{ fontSize: 12, color: "rgba(10,6,18,0.30)", textDecoration: "none" }}>{l}</a>
@@ -1424,7 +1437,6 @@ function Footer() {
 export default function ZonePage() {
   return (
     <div style={{ background: C.bg, overflowX: "hidden" }}>
-      {/* Inject marquee + dot-live keyframes — this is what makes them actually animate */}
       <style>{GLOBAL_CSS}</style>
       <Header />
       <Hero />

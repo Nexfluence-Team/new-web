@@ -858,7 +858,7 @@ function Footer() {
         justifyContent: "space-between", flexWrap: "wrap", gap: 10,
       }}>
         <p style={{ fontSize: 12, color: "rgba(10,6,18,0.28)", margin: 0, fontFamily: FONT }}>
-          © {new Date().getFullYear()} Nexfluence SIA. Registered in Latvia. All rights reserved.
+          © {new Date().getFullYear()} Nexfluence. Registered in Europe. All rights reserved.
         </p>
         <div style={{ display: "flex", gap: 18 }}>
           {["Privacy Policy", "Terms of Service"].map((l) => (
