@@ -1288,7 +1288,7 @@ function WhyTestimonial({ style }: { style?: CSSProps }) {
   }}
 >
   <Image
-    src="/images/Kinetics-leader.webp"
+    src="/images/Kinetics-Leader.webp"
     alt="Profile"
     fill
     style={{
