@@ -246,7 +246,7 @@ function IconBox({ color, children }: { color: string; children: React.ReactNode
 // ─────────────────────────────────────────────
 const NAV_LINKS = [
   { label: "Marketplace", href: "/marketplace" },
-  // { label: "Creators",    href: "/creators"    },
+  { label: "Creators",    href: "/creators"    },
   { label: "About Us",    href: "/about"       },
   { label: "Growth",      href: "/progress"    },
 ];
@@ -277,6 +277,7 @@ function Header() {
         padding: isMobile ? "16px 20px" : w < 900 ? "18px 32px" : "18px 48px",
         display: "flex", alignItems: "center", gap: 12,
       }}>
+        {/* Logo image only — no company name text */}
         <a href="/" style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0 }}>
           <Image src="/Nex.webp" alt="Nexfluence"
             width={isMobile ? 34 : 40} height={isMobile ? 34 : 40}
@@ -301,13 +302,13 @@ function Header() {
         <div style={{ marginLeft: "auto", display: "flex", gap: 10, alignItems: "center" }}>
           {!isMobile && (
             <Btn href="/contact" variant="primary" style={{ padding: "10px 20px", fontSize: 13 }}>
-              Contact Us
+              For Brands
             </Btn>
           )}
           {isMobile && (
             <>
               <Btn href="/contact" variant="primary" style={{ padding: "9px 14px", fontSize: 12 }}>
-                Contact Us
+                For Brands
               </Btn>
               <button onClick={() => setMenuOpen(!menuOpen)} style={{
                 background: "none", border: "none", cursor: "pointer",
@@ -330,10 +331,10 @@ function Header() {
               textDecoration: "none", fontFamily: FONT,
             }}>{l.label}</a>
           ))}
-          <a href="/contact" onClick={() => setMenuOpen(false)} style={{
+          <a href="#how-it-works" onClick={() => setMenuOpen(false)} style={{
             fontSize: 15, fontWeight: 600, color: C.pink,
             textDecoration: "none", fontFamily: FONT,
-          }}>Contact Us</a>
+          }}>For Creators</a>
         </div>
       )}
     </header>
@@ -342,8 +343,6 @@ function Header() {
 
 // ─────────────────────────────────────────────
 // 2. HERO BANNER
-// Full-width image constrained to site maxWidth.
-// No founder portrait here — that moves above team.
 // ─────────────────────────────────────────────
 function HeroBanner() {
   const w        = useWindowWidth();
@@ -353,7 +352,7 @@ function HeroBanner() {
 
   return (
     <section style={{
-      paddingTop: isMobile ? 72 : 80,  // clear fixed header
+      paddingTop: isMobile ? 72 : 80,
       background: C.bg,
     }}>
       <div style={{
@@ -363,7 +362,6 @@ function HeroBanner() {
         paddingRight: hPad,
         boxSizing: "border-box",
       }}>
-        {/* Banner image */}
         <div style={{
           position: "relative",
           width: "100%",
@@ -380,34 +378,20 @@ function HeroBanner() {
             style={{ objectFit: "cover", objectPosition: "center 30%" }}
             priority
           />
-          {/* Dark overlay for legibility */}
           <div style={{
             position: "absolute", inset: 0,
             background: "linear-gradient(to top, rgba(10,6,18,0.62) 0%, rgba(10,6,18,0.18) 55%, transparent 100%)",
           }} />
-          {/* Violet tint */}
           <div style={{
             position: "absolute", inset: 0,
             background: "linear-gradient(135deg, rgba(124,85,255,0.18) 0%, rgba(255,51,188,0.08) 50%, transparent 70%)",
           }} />
-          {/* Text overlay */}
           <div style={{
             position: "absolute",
             bottom: isMobile ? 20 : 32,
             left: isMobile ? 20 : 36,
             zIndex: 2,
           }}>
-            {/* <p style={{
-              fontFamily: FONT,
-              fontSize: isMobile ? 11 : 12,
-              fontWeight: 600,
-              color: C.pink,
-              letterSpacing: "0.16em",
-              textTransform: "uppercase",
-              margin: "0 0 8px",
-            }}>
-              Our Story
-            </p> */}
             <h1 style={{
               fontFamily: FONT,
               fontSize: isMobile ? 24 : w < 900 ? 34 : 46,
@@ -419,7 +403,7 @@ function HeroBanner() {
               textShadow: "0 2px 20px rgba(0,0,0,0.4)",
               maxWidth: isMobile ? 280 : 560,
             }}>
-              Building the Future of Creator Economy
+              We are building the infrastructure for the fastest growing market on the planet.
             </h1>
           </div>
         </div>
@@ -439,22 +423,23 @@ function OurStory() {
   return (
     <section id="story" style={siteOuter(w)}>
       <div style={{ textAlign: "center", marginBottom: 52 }}>
-        <PillLabel>Our Story</PillLabel>
+        <PillLabel>About Nexfluence</PillLabel>
         <h2 style={{
           fontSize: isMobile ? 26 : 38, fontWeight: 900,
           letterSpacing: "-0.035em", lineHeight: 1.1,
           color: C.ink, marginBottom: 14, fontFamily: FONT,
         }}>
-          From a Baltic Problem to a{" "}
-          <GradientText>Baltic Solution</GradientText>
+          The Biggest Market with the{" "}
+          <GradientText>Weakest Foundation</GradientText>
         </h2>
         <p style={{
           fontSize: isMobile ? 14 : 16, color: C.inkDim,
-          maxWidth: 520, margin: "0 auto", lineHeight: 1.75, fontFamily: FONT,
+          maxWidth: 560, margin: "0 auto", lineHeight: 1.75, fontFamily: FONT,
         }}>
-          Nexfluence was born in Riga, Latvia — out of frustration with how
-          influencer marketing worked (or didn't). We set out to build
-          something transparent, performance‑driven, and proudly Baltic.
+          Influencer marketing is exploding, yet it still runs on guesswork, email chains
+          and trust nobody can verify. We are here to change that. We are building the
+          platform the creator economy will run on, and we are starting where the
+          opportunity is widest — the Baltics.
         </p>
       </div>
 
@@ -492,11 +477,15 @@ function StoryMission({ style }: { style?: CSSProps }) {
           <h3 style={{
             fontSize: 19, fontWeight: 700, color: C.ink,
             letterSpacing: "-0.02em", margin: "0 0 10px", fontFamily: FONT,
-          }}>Our Mission</h3>
+          }}>The Problem, Why Now</h3>
           <p style={{ fontSize: 14, color: C.inkDim, lineHeight: 1.75, margin: 0, fontFamily: FONT }}>
-            To make influencer marketing in the Baltic region simple,
-            measurable, and fair — for brands that want real ROI and
-            creators who deserve to be paid for real influence.
+            Brands pour more into creators every year, but there is no real infrastructure
+            beneath it. No standard way to contract, to pay safely, to see what works, or
+            to run a campaign across borders. We spoke with more than 300 small and medium
+            businesses across the Baltics and heard the same thing again and again — they
+            wanted to grow through creators, had no safe and simple way to do it, and had
+            no way to reach the audience in the next country over. That gap is the reason
+            Nexfluence exists.
           </p>
         </div>
       </div>
@@ -517,8 +506,13 @@ function StoryVision({ style }: { style?: CSSProps }) {
             letterSpacing: "-0.02em", margin: "0 0 10px", fontFamily: FONT,
           }}>Our Vision</h3>
           <p style={{ fontSize: 14, color: C.inkDim, lineHeight: 1.75, margin: 0, fontFamily: FONT }}>
-            Become the infrastructure powering the creator economy across
-            Northern Europe — starting with Latvia, Lithuania, and Estonia.
+            The platform the creator economy will run on. We started Nexfluence in early
+            2026 to build the missing infrastructure for influencer marketing — not another
+            agency, not another directory, but the place where businesses, creators and
+            agencies meet, agree, transact and grow, safely and in the open. We began in
+            the Baltics because the talent here is extraordinary and the cross-border
+            opportunity is wide open. What we prove here, we take to every market that
+            looks like it.
           </p>
         </div>
       </div>
@@ -537,12 +531,15 @@ function StoryOrigin({ style }: { style?: CSSProps }) {
           <h3 style={{
             fontSize: 19, fontWeight: 700, color: C.ink,
             letterSpacing: "-0.02em", margin: "0 0 10px", fontFamily: FONT,
-          }}>How It Started</h3>
+          }}>Creator Nexus — The Community at Our Core</h3>
           <p style={{ fontSize: 14, color: C.inkDim, lineHeight: 1.75, margin: 0, fontFamily: FONT }}>
-            Founded in 2024 in Riga, Nexfluence started as a small
-            WhatsApp group connecting local brands with trusted creators.
-            Today we're a platform with 500+ vetted influencers and
-            25+ active brand partners across all three Baltic states.
+            A marketplace is only as strong as the people on it, so we back creators
+            directly. Creator Nexus is our ecosystem where influencers network, learn and
+            grow together. We invest in their education, open doors to new opportunities,
+            and bring the region's creators into one community that lifts each other up.
+            We have hosted the biggest creator gatherings in the Baltics, putting industry
+            leaders in the same room as the next generation of talent. This is the one
+            thing no competitor can copy.
           </p>
         </div>
       </div>
@@ -561,21 +558,19 @@ function StoryOrigin({ style }: { style?: CSSProps }) {
 
 // ─────────────────────────────────────────────
 // 4. TEAM
-// Founder compact card sits full-width above the team grid.
-// Card is half the previous height — horizontal layout, photo left.
 // ─────────────────────────────────────────────
 interface TeamMember { name: string; role: string; photo: string; linkedin?: string; }
 
 const TEAM: TeamMember[] = [
-  { name: "Anna Liepa",       role: "Head of Creator Relations", photo: "/team/member1.webp" },
-  { name: "Jānis Bērziņš",   role: "Campaign Manager",          photo: "/team/member2.webp" },
-  { name: "Līva Ozoliņa",    role: "Data & Analytics",          photo: "/team/member3.webp" },
-  { name: "Mārtiņš Kalniņš", role: "Partnerships Lead",         photo: "/team/member4.webp" },
-  { name: "Elīna Siliņa",    role: "Content Strategist",        photo: "/team/member5.webp" },
-  { name: "Kārlis Vītols",   role: "Engineering Lead",          photo: "/team/member6.webp" },
+  { name: "Sarvesh Mishra", role: "Leading Technology",              photo: "/team/member1.webp" },
+  { name: "Voldemars Bredikis",     role: "Leading Advisor",         photo: "/team/member2.webp" },
+  { name: "Alex",                   role: "Leading Operations", photo: "/team/member3.webp" },
+
+  { name: "Gaurav Singh ",     role: "Leading Strategy",           photo: "/team/member6.webp" },  
+  { name: "Liva Perkone",           role: "Leading Relationships",             photo: "/team/member4.webp" },
+  { name: "Lina Sarma",             role: "Leading Innovation",              photo: "/team/member5.webp" },
 ];
 
-// Compact founder card — photo left, bio right, ~240px tall
 function FounderCard() {
   const w        = useWindowWidth();
   const isMobile = w < 640;
@@ -591,7 +586,6 @@ function FounderCard() {
       background: "#fff",
       marginBottom: isMobile ? 12 : 14,
     }}>
-      {/* Photo */}
       <div style={{
         position: "relative",
         minHeight: isMobile ? 140 : 200,
@@ -600,8 +594,7 @@ function FounderCard() {
           src="/images/Harshul.webp"
           alt="Harshul Gupta, Founder & CEO"
           fill
-          style={{ objectFit: "cover", objectPosition: "center 20%",     transform: "scaleX(-1)",
- }}
+          style={{ objectFit: "cover", objectPosition: "center 20%", transform: "scaleX(-1)" }}
         />
         <div style={{
           position: "absolute", inset: 0,
@@ -609,7 +602,6 @@ function FounderCard() {
         }} />
       </div>
 
-      {/* Bio */}
       <div style={{
         padding: isMobile ? "16px 18px" : "22px 28px",
         display: "flex",
@@ -629,21 +621,7 @@ function FounderCard() {
           }}>
             Harshul Gupta
           </h3>
-          {/* Gradient badge */}
-          {/* <span style={{
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: "0.08em",
-            background: C.grad,
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            fontFamily: FONT,
-          }}>
-            Founder & CEO
-          </span> */}
         </div>
-        {/* Gradient divider */}
         <div style={{ width: 32, height: 2, borderRadius: 2, background: C.grad }} />
         <p style={{
           fontFamily: FONT,
@@ -653,9 +631,8 @@ function FounderCard() {
           margin: 0,
           maxWidth: 560,
         }}>
-          "I started Nexfluence to solve a problem I lived every day —
-          the disconnect between brands and authentic Baltic creators.
-          Real people, real stories, real results."
+          The operator who chose the Baltics, spoke with 300+ businesses, and turned a
+          clear and painful gap into a company. Founder and CEO of Nexfluence.
         </p>
       </div>
     </div>
@@ -703,7 +680,7 @@ function TeamCard({ member }: { member: TeamMember }) {
         <a href={member.linkedin} target="_blank" rel="noreferrer" style={{
           fontSize: 12, color: C.violet, textDecoration: "none",
           fontWeight: 600, fontFamily: FONT,
-        }}>LinkedIn </a>
+        }}>LinkedIn</a>
       )}
     </div>
   );
@@ -717,20 +694,18 @@ function Team() {
   return (
     <section id="team" style={siteOuter(w)}>
       <div style={{ textAlign: "center", marginBottom: 52 }}>
-        <PillLabel>Our Team</PillLabel>
+        <PillLabel>The People Building It</PillLabel>
         <h2 style={{
           fontSize: isMobile ? 26 : 38, fontWeight: 900,
           letterSpacing: "-0.035em", lineHeight: 1.1,
           color: C.ink, fontFamily: FONT,
         }}>
-          The People Behind{" "}<GradientText>the Platform</GradientText>
+          A Team That Has{" "}<GradientText>Done It Before</GradientText>
         </h2>
       </div>
 
-      {/* Founder compact card — full width above team grid */}
       <FounderCard />
 
-      {/* Team grid */}
       <div style={{
         display: "grid",
         gridTemplateColumns: isMobile
@@ -750,12 +725,11 @@ function Team() {
 // 5. EVENTS & COMMUNITY
 // ─────────────────────────────────────────────
 const EVENT_PHOTOS = [
-  { src: "/images/Last Event.webp", alt: "Influencer meetup in Riga",      span: false },
-  { src: "/images/Header.webp", alt: "Brands & creators networking",   span: false },
-  { src: "/images/Lecture.webp", alt: "Creator Nexus 2026 Stage",  span: true  },
-  { src: "/images/Talking.webp", alt: "Creator masterclass",            span: false },
-  { src: "/images/Ice Cream.webp", alt: "Pop‑up brand activation",        span: false },
-  // { src: "/events/influencer6.webp", alt: "After‑party celebration",        span: false },
+  { src: "/images/Last Event.webp", alt: "Influencer meetup in Riga",    span: false },
+  { src: "/images/Header.webp",     alt: "Brands & creators networking", span: false },
+  { src: "/images/Lecture.webp",    alt: "Creator Nexus 2026 Stage",     span: true  },
+  { src: "/images/Talking.webp",    alt: "Creator masterclass",          span: false },
+  { src: "/images/Ice Cream.webp",  alt: "Pop-up brand activation",      span: false },
 ];
 
 function Events() {
@@ -767,13 +741,13 @@ function Events() {
   return (
     <section style={siteOuter(w)}>
       <div style={{ textAlign: "center", marginBottom: 52 }}>
-        <PillLabel>Community & Events</PillLabel>
+        <PillLabel>Momentum You Can See</PillLabel>
         <h2 style={{
           fontSize: isMobile ? 26 : 38, fontWeight: 900,
           letterSpacing: "-0.035em", lineHeight: 1.1,
           color: C.ink, fontFamily: FONT,
         }}>
-          Where <GradientText>Creators & Brands</GradientText> Meet
+          We Do Not Just Use Creators —{" "}<GradientText>We Invest in Them</GradientText>
         </h2>
       </div>
 
@@ -836,7 +810,6 @@ function Events() {
 
 // ─────────────────────────────────────────────
 // 6. SPONSORS MARQUEE — full-bleed, edge-to-edge
-// Animation injected via GLOBAL_CSS <style> tag
 // ─────────────────────────────────────────────
 const SPONSORS = [
   { name: "Artisan Street Bakery", img: "/Artisan Street Bakery.webp" },
@@ -878,7 +851,6 @@ function SponsorsMarquee() {
         borderBottom: "1px solid rgba(124,85,255,0.22)",
         background:   "rgba(124,85,255,0.03)",
       }}>
-        {/* Ambient glow */}
         <div style={{
           position: "absolute", inset: 0,
           background: "radial-gradient(ellipse at 50% 50%, rgba(124,85,255,0.18) 0%, rgba(255,51,188,0.10) 35%, transparent 65%)",
@@ -886,14 +858,12 @@ function SponsorsMarquee() {
           pointerEvents: "none", zIndex: 1,
         }} />
 
-        {/* Edge fade */}
         <div style={{
           position: "absolute", inset: 0,
           background: `linear-gradient(90deg, ${C.bg} 0%, transparent 6%, transparent 94%, ${C.bg} 100%)`,
           pointerEvents: "none", zIndex: 2,
         }} />
 
-        {/* Scrolling tape — animated via .marquee-track class in GLOBAL_CSS */}
         <div className="marquee-track">
           {items.map((s, i) => (
             <div
@@ -961,26 +931,27 @@ function FinalCTA() {
           backgroundSize: "40px 40px", pointerEvents: "none",
         }} />
         <div style={{ position: "relative", zIndex: 1 }}>
-          <PillLabel>Get in Touch</PillLabel>
+          <PillLabel>Help Us Build the Future of Influence</PillLabel>
           <h2 style={{
             fontSize: isMobile ? 26 : 42, fontWeight: 900,
             letterSpacing: "-0.04em", lineHeight: 1.1,
             color: C.ink, marginBottom: 14, fontFamily: FONT,
           }}>
-            Want to Work with Us?
+            Ready to Grow?
             <br />
-            <GradientText>Let's Build Something Great</GradientText>
+            <GradientText>There Is a Place for You Here</GradientText>
           </h2>
           <p style={{
             fontSize: isMobile ? 14 : 16, color: C.inkDim,
-            maxWidth: 460, margin: "0 auto 36px",
+            maxWidth: 480, margin: "0 auto 36px",
             lineHeight: 1.75, fontFamily: FONT,
           }}>
-            Whether you're a brand, creator, or potential partner — we'd love to hear from you.
+            Whether you are a business ready to grow, a creator ready to rise, or a
+            partner who believes in where this is going — there is a place for you here.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Btn href="mailto:brands@nexfluence.eu" variant="primary">I'm a Brand</Btn>
-            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">I'm a Creator</Btn>
+            <Btn href="mailto:brands@nexfluence.eu" variant="primary">Start a Campaign</Btn>
+            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">Join as a Creator</Btn>
           </div>
           <p style={{
             fontSize: 12, color: "rgba(10,6,18,0.3)",
@@ -988,6 +959,11 @@ function FinalCTA() {
           }}>
             No commitment required · Response within 24 hours
           </p>
+          <a href="mailto:hello@nexfluence.eu" style={{
+            display: "block", marginTop: 10,
+            fontSize: 12, color: C.inkDim,
+            textDecoration: "none", fontFamily: FONT,
+          }}>Get in touch</a>
         </div>
       </div>
     </section>
@@ -999,7 +975,7 @@ function FinalCTA() {
 // ─────────────────────────────────────────────
 const FOOTER_LINKS = {
   Platform: ["Creator Discovery", "Campaign Management", "Analytics", "Affiliate Programs"],
-  Company:  ["About Us", "Blog", "Careers", "Press"],
+  Company:  ["About Us", "Growth", "Careers", "Press"],
   Contact:  ["brands@nexfluence.eu", "creators@nexfluence.eu", "Instagram", "LinkedIn"],
 };
 
@@ -1030,8 +1006,9 @@ function Footer() {
             </div>
           </div>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.75, maxWidth: 230, fontFamily: FONT }}>
-            Latvia's first performance‑based influencer marketing platform
-            connecting brands with authentic Baltic creators.
+            The influencer marketing marketplace for the Baltics, connecting businesses,
+            creators and agencies across Latvia, Lithuania and Estonia, with contracts
+            and payments handled safely in one place.
           </p>
           <div style={{ display: "flex", gap: 9, marginTop: 18 }}>
             {["IG", "LI", "TT"].map((s) => (
@@ -1099,7 +1076,6 @@ function Footer() {
 export default function AboutPage() {
   return (
     <div style={{ background: C.bg, overflowX: "hidden", fontFamily: FONT }}>
-      {/* Inject marquee keyframes — this is what makes the strip actually move */}
       <style>{GLOBAL_CSS}</style>
       <Header />
       <HeroBanner />
@@ -1112,14 +1088,3 @@ export default function AboutPage() {
     </div>
   );
 }
-
-/*
- * ═══════════════════════════════════════════════════════════════════
- * IMAGE FILES NEEDED
- * ─────────────────────────────────────────────────────────────────
- *  /Lecture.webp              the wide banner photo (uploaded)
- *  /founder.webp              founder portrait for compact card
- *  /team/member1–6.webp       team member photos
- *  /events/influencer1–6.webp event gallery photos
- * ═══════════════════════════════════════════════════════════════════
- */
