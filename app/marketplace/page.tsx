@@ -11,7 +11,7 @@ import { useState, useEffect, useRef, type FormEvent } from "react";
 // ─────────────────────────────────────────────
 // API
 // ─────────────────────────────────────────────
-const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://your-backend.onrender.com";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://nexus-creator-4rni.onrender.com";
 
 const FONT = "'Rubik', sans-serif";
 
