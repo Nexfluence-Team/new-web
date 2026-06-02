@@ -562,13 +562,13 @@ function StoryOrigin({ style }: { style?: CSSProps }) {
 interface TeamMember { name: string; role: string; photo: string; linkedin?: string; }
 
 const TEAM: TeamMember[] = [
-  { name: "Sarvesh Mishra", role: "Leading Technology",              photo: "/team/member1.webp" },
-  { name: "Voldemars Bredikis",     role: "Leading Advisor",         photo: "/team/member2.webp" },
-  { name: "Alex",                   role: "Leading Operations", photo: "/team/member3.webp" },
+  { name: "Sarvesh Mishra", role: "Leading Technology",              photo: "/people/Sarvesh.webp" },
+  { name: "Voldemars Bredikis",     role: "Leading Advisor",         photo: "/people/Voldemars.webp" },
+  { name: "Alex",                   role: "Leading Operations", photo: "/people/Alex.webp" },
 
-  { name: "Gaurav Singh ",     role: "Leading Strategy",           photo: "/team/member6.webp" },  
-  { name: "Liva Perkone",           role: "Leading Relationships",             photo: "/team/member4.webp" },
-  { name: "Lina Sarma",             role: "Leading Innovation",              photo: "/team/member5.webp" },
+  { name: "Gaurav Singh ",     role: "Leading Strategy",           photo: "/people/Gaurav.webp" },  
+  { name: "Liva Perkone",           role: "Leading Relationships",             photo: "/people/Liva.webp" },
+  { name: "Lina Sarma",             role: "Leading Innovation",              photo: "/people/Lina.webp" },
 ];
 
 function FounderCard() {
