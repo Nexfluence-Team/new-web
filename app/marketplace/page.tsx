@@ -284,7 +284,7 @@ function Header() {
           ))}
           <a href="/contact" onClick={() => setMenuOpen(false)} style={{
             fontSize: 15, fontWeight: 600, color: C.pink, textDecoration: "none", fontFamily: FONT,
-          }}>Contact Us →</a>
+          }}>Contact Us </a>
         </div>
       )}
     </header>
@@ -354,7 +354,7 @@ function LaunchingHero() {
         </p>
 
         <Btn href="#register" variant="primary" style={{ padding: "14px 36px", fontSize: 15 }}>
-          Register Interest →
+          Register Interest 
         </Btn>
       </div>
     </section>
@@ -385,8 +385,8 @@ function CEOMessage() {
           order: isMobile ? 2 : 1,
         }}>
           <Image
-            src="/founder.webp"
-            alt="Artūrs, Founder & CEO"
+            src="/images/Harshul.webp"
+            alt="Harshul Gupta, Founder & CEO"
             fill
             style={{ objectFit: "cover", objectPosition: "center 20%" }}
             priority
@@ -409,11 +409,11 @@ function CEOMessage() {
           }}>"</p>
 
           <p style={{
-            fontSize: isMobile ? 15 : 18, color: C.inkDim2,
-            lineHeight: 1.85, marginBottom: 32, fontFamily: FONT,
-            fontStyle: "italic",
+            fontSize: isMobile ? 15 : 16, color: C.inkDim2,
+            lineHeight: 1.5, marginBottom: 32, fontFamily: FONT, textAlign: "justify",
+
           }}>
-            The Nexfluence Marketplace isn't just another platform — it's
+            The Nexus Marketplace isn't mere another platform — it's
             the result of hundreds of conversations with creators and brands
             across the Baltics. We listened to what works, what doesn't, and
             what the creator economy truly needs.
@@ -422,16 +422,10 @@ function CEOMessage() {
           </p>
 
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div style={{
-              width: 44, height: 44, borderRadius: "50%",
-              background: C.grad, display: "flex",
-              alignItems: "center", justifyContent: "center", flexShrink: 0,
-            }}>
-              <span style={{ fontSize: 18, fontWeight: 700, color: "#fff", fontFamily: FONT }}>A</span>
-            </div>
+            
             <div>
-              <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: FONT }}>Artūrs</p>
-              <p style={{ fontSize: 13, color: C.pink, margin: "3px 0 0", fontFamily: FONT }}>Founder & CEO, Nexfluence</p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: FONT }}>Harshul Gupta</p>
+              <p style={{ fontSize: 13, color: C.pink, margin: "3px 0 0", fontFamily: FONT }}>Founder & CEO</p>
             </div>
           </div>
         </div>
@@ -637,7 +631,7 @@ function InterestForm() {
               </div>
 
               <Btn type="submit" variant="primary" disabled={sending} style={{ width: "100%", marginTop: 4 }}>
-                {sending ? "Registering…" : "Keep Me Posted →"}
+                {sending ? "Registering…" : "Keep Me Posted "}
               </Btn>
 
               <p style={{ fontSize: 12, color: C.inkDim, textAlign: "center", margin: 0, fontFamily: FONT }}>

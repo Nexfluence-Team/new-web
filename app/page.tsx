@@ -245,7 +245,7 @@ function Header() {
           ))}
           <a href="#how-it-works" onClick={() => setMenuOpen(false)} style={{
             fontSize: 15, fontWeight: 600, color: C.pink, textDecoration: "none",
-          }}>For Creators →</a>
+          }}>For Creators </a>
         </div>
       )}
     </header>
@@ -339,13 +339,13 @@ function Hero() {
           </p>
 
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <Btn href="/contact" variant="primary">Start a Campaign →</Btn>
+            <Btn href="/contact" variant="primary">Start a Campaign </Btn>
             <Btn href="/contact" variant="ghost">Join as Creator</Btn>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 36, flexWrap: "wrap" }}>
             <div style={{ display: "flex" }}>
-              {["/images/Cindy.webp", "/Speaker 2.webp"].map((src, i) => (
+              {["/images/Armandez.webp", "/images/Seraphena.webp", "/images/Cindy.webp"].map((src, i) => (
                 <div key={i} style={{
                   width: 32, height: 32, borderRadius: "50%", overflow: "hidden",
                   border: "2px solid #fff", marginLeft: i === 0 ? 0 : -10,
@@ -472,7 +472,7 @@ function HeroVisual() {
         boxShadow: "0 4px 14px rgba(255,51,188,0.10)",
       }}>
         <span className="dot-live" />
-        <span style={{ fontSize: 12, color: C.ink, fontWeight: 500 }}>25+ active campaigns</span>
+        <span style={{ fontSize: 12, color: C.ink, fontWeight: 500 }}>25+ Active Campaigns</span>
       </div>
     </div>
   );
@@ -779,7 +779,7 @@ function SvcHighlight({ style }: { style?: CSSProps }) {
         </p>
       </div>
       <Btn href="#contact" variant="primary" style={{ padding: "10px 20px", fontSize: 13, width: "100%" }}>
-        Get Started →
+        Get Started 
       </Btn>
     </div>
   );
@@ -875,7 +875,7 @@ function HowItWorks() {
 
       <div style={{ marginTop: 52, textAlign: "center" }}>
         <Btn href={tab === "brands" ? "#contact" : "#apply"} variant="primary">
-          {tab === "brands" ? "Start a Campaign →" : "Apply to Join →"}
+          {tab === "brands" ? "Start a Campaign " : "Apply to Join "}
         </Btn>
       </div>
     </section>
@@ -889,9 +889,9 @@ interface CreatorProfile { name: string; handle: string; niche: string; photo: s
 
 const CREATORS: CreatorProfile[] = [
   { name: "Cindy Bokāne",    handle: "@cindywanderlust", niche: "Travel & Lifestyle",    photo: "/images/Cindy.webp", followers: "84K", platforms: ["IG","YT"], location: "Riga, LV" },
-  { name: "Armands Simsons", handle: "@armandssimsons", niche: "Business & Startups",   photo: "/Speaker 2.webp", followers: "61K", platforms: ["IG","LI"], location: "Riga, LV" },
-  { name: "Event Creator",   handle: "@nexcreator",     niche: "Food & Hospitality",    photo: "/Food.webp",      followers: "32K", platforms: ["IG","TT"], location: "Tallinn, EE" },
-  { name: "Space Creator",   handle: "@spacecreator",   niche: "Design & Architecture", photo: "/Space.webp",     followers: "47K", platforms: ["IG"],      location: "Vilnius, LT" },
+  { name: "Armands Simsons", handle: "@armandssimsons", niche: "Business & Startups",   photo: "/images/Armandez.webp", followers: "61K", platforms: ["IG","LI"], location: "Riga, LV" },
+  { name: "Event Creator",   handle: "@nexcreator",     niche: "Food & Hospitality",    photo: "/images/Seraphena.webp",      followers: "32K", platforms: ["IG","TT"], location: "Tallinn, EE" },
+  { name: "Space Creator",   handle: "@spacecreator",   niche: "Design & Architecture", photo: "/images/Aleksejs.webp",     followers: "47K", platforms: ["IG"],      location: "Vilnius, LT" },
 ];
 
 const PCOLS: Record<string, string> = { IG: "#ff33bc", TT: "#7c55ff", YT: "#e03030", LI: "#6a66ff" };
@@ -965,7 +965,7 @@ function FeaturedCreators() {
             Meet the Voices That<br /><GradientText>Move the Baltics</GradientText>
           </h2>
         </div>
-        <Btn href="#how-it-works" variant="ghost" style={{ flexShrink: 0 }}>Join the Network →</Btn>
+        <Btn href="#how-it-works" variant="ghost" style={{ flexShrink: 0 }}>Join the Network </Btn>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : isTablet ? "1fr 1fr" : "repeat(4, 1fr)", gap: 14 }}>
@@ -979,7 +979,7 @@ function FeaturedCreators() {
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{ display: "flex" }}>
-            {["/images/Cindy.webp", "/Speaker 2.webp", "/Food.webp"].map((src, i) => (
+            {["/images/Armandez.webp", "/images/Seraphena.webp", "/images/Cindy.webp"].map((src, i) => (
               <div key={i} style={{
                 width: 34, height: 34, borderRadius: "50%", overflow: "hidden",
                 border: "2px solid #fff", marginLeft: i === 0 ? 0 : -9, position: "relative",
@@ -990,7 +990,7 @@ function FeaturedCreators() {
             ))}
           </div>
           <p style={{ fontSize: 14, color: C.inkDim }}>
-            <span style={{ color: C.ink, fontWeight: 600 }}>496+ more creators</span> across food, fashion, tech, fitness, and more
+            <span style={{ color: C.ink, fontWeight: 600 }}>500+ more creators</span> across food, fashion, tech, fitness, and more
           </p>
         </div>
         <Btn href="#contact" variant="primary" style={{ padding: "10px 20px", fontSize: 13 }}>Browse Full Roster</Btn>
@@ -1250,7 +1250,7 @@ function WhyTestimonial({ style }: { style?: CSSProps }) {
       ...style,
     }}>
       <p style={{ fontSize: 56, lineHeight: 0.8, fontWeight: 900, background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", margin: 0 }}>"</p>
-      <p style={{ fontSize: 16, color: C.inkDim2, lineHeight: 1.8, fontStyle: "italic", margin: 0 }}>
+      <p style={{ fontSize: 16, color: C.inkDim2, lineHeight: 1.8,  margin: 0 }}>
         Working with Nexfluence was the first time we actually knew where every euro of our influencer budget went — and it came back 3× over.
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
@@ -1302,8 +1302,8 @@ function FinalCTA() {
             Whether you're a brand looking to scale or a creator ready to monetize — there's a place for you in the Nexfluence network.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Btn href="mailto:brands@nexfluence.eu" variant="primary">I'm a Brand →</Btn>
-            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">I'm a Creator →</Btn>
+            <Btn href="mailto:brands@nexfluence.eu" variant="primary">I'm a Brand </Btn>
+            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">I'm a Creator </Btn>
           </div>
           <p style={{ fontSize: 12, color: "rgba(10,6,18,0.3)", marginTop: 18 }}>
             No commitment required · Response within 24 hours
