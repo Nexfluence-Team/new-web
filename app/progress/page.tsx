@@ -4,6 +4,35 @@
  * app/progress/page.tsx
  * Nexfluence — Growth Timeline Page
  *
+ * ── HOW TO ADD A NEW EVENT ──────────────────────────────────────────────────
+ *
+ * To add an event to an EXISTING month, find the month in TIMELINE and add
+ * a new object inside its `entries` array:
+ *
+ *   {
+ *     title: "Your Event Title",                          // can use JSX for colored spans
+ *     images: [
+ *       { src: "/progress/your-image.webp", caption: "Caption text" },
+ *       // add up to 3 images — 1, 2, or 3 all render automatically
+ *     ],
+ *     description: "Your event description paragraph.",
+ *   },
+ *
+ * To add a NEW month, paste a new object at the top of the TIMELINE array:
+ *
+ *   {
+ *     month: "July 2026",
+ *     entries: [
+ *       {
+ *         title: "Your Event Title",
+ *         images: [{ src: "/progress/your-img.webp", caption: "Caption" }],
+ *         description: "Description paragraph.",
+ *       },
+ *     ],
+ *   },
+ *
+ * ─────────────────────────────────────────────────────────────────────────────
+ *
  * Design system:
  *  - Font: Rubik throughout
  *  - Theme: Light / white
@@ -320,7 +349,7 @@ function ProgressHero() {
 // 3. TIMELINE COMPONENTS
 // ─────────────────────────────────────────────
 
-/* Photo caption overlay — kept from original, font unified */
+/* Photo caption overlay */
 function PhotoCaption({ text, small }: { text: string; small?: boolean }) {
   return (
     <>
@@ -373,7 +402,6 @@ function ImageGrid({ images }: { images: { src: string; caption: string }[] }) {
     );
   }
 
-  // 2 or 3 images: on mobile always 2-col, on larger screens match count
   const cols = isMobile
     ? "1fr 1fr"
     : count === 2
@@ -403,16 +431,27 @@ function ImageGrid({ images }: { images: { src: string; caption: string }[] }) {
   );
 }
 
-/* Entry sub-heading + images + description */
+/* ─── SINGLE EVENT ENTRY ────────────────────────────────────────────────────
+ *
+ * Each entry = one event within a month.
+ * To add an event, paste a new <TimelineEntry /> in the MonthBlock entries map.
+ * Entries within the same month are separated by a subtle divider.
+ *
+ * ─────────────────────────────────────────────────────────────────────────── */
 function TimelineEntry({
-  title, images, description,
+  title, images, description, isLastInMonth,
 }: {
   title: React.ReactNode;
   images: { src: string; caption: string }[];
   description: string;
+  isLastInMonth?: boolean;
 }) {
   return (
-    <div style={{ marginBottom: 32 }}>
+    <div style={{
+      marginBottom: isLastInMonth ? 0 : 28,
+      paddingBottom: isLastInMonth ? 0 : 28,
+      borderBottom: isLastInMonth ? "none" : "1px solid rgba(124,85,255,0.10)",
+    }}>
       <div style={{
         fontFamily: FONT, fontSize: 17, fontWeight: 700,
         color: C.ink, letterSpacing: "-0.02em",
@@ -432,7 +471,12 @@ function TimelineEntry({
   );
 }
 
-/* Month block — month heading + connector line + entries */
+/* ─── MONTH BLOCK ───────────────────────────────────────────────────────────
+ *
+ * One block per month. The `entries` array holds all events for that month.
+ * Add as many entries as needed — they stack vertically with dividers.
+ *
+ * ─────────────────────────────────────────────────────────────────────────── */
 function MonthBlock({
   month, entries, isLast,
 }: {
@@ -448,8 +492,7 @@ function MonthBlock({
   const isMobile = w < 640;
   const isTablet = w >= 640 && w < 900;
 
-  // On desktop/tablet: left-rail timeline layout
-  // On mobile: flat stacked layout (no rail)
+  // Mobile: flat stacked layout
   if (isMobile) {
     return (
       <div style={{ marginBottom: 52 }}>
@@ -472,8 +515,31 @@ function MonthBlock({
             backgroundClip: "text",
           }}>{month}</h2>
         </div>
+
+        {/* Event count badge — shown when month has 2+ events */}
+        {entries.length > 1 && (
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            background: "rgba(124,85,255,0.08)",
+            border: "1px solid rgba(124,85,255,0.18)",
+            borderRadius: 20, padding: "3px 10px",
+            marginBottom: 16, marginLeft: 20,
+          }}>
+            <span style={{
+              fontFamily: FONT, fontSize: 11, fontWeight: 600,
+              color: C.violet, letterSpacing: "0.04em",
+            }}>
+              {entries.length} events
+            </span>
+          </div>
+        )}
+
         {entries.map((entry, i) => (
-          <TimelineEntry key={i} {...entry} />
+          <TimelineEntry
+            key={i}
+            {...entry}
+            isLastInMonth={i === entries.length - 1}
+          />
         ))}
       </div>
     );
@@ -482,7 +548,7 @@ function MonthBlock({
   // Tablet / Desktop: two-column layout with vertical rail
   const railWidth = 2;
   const dotSize   = 14;
-  const leftCol   = isTablet ? 140 : 180; // width of the month label column
+  const leftCol   = isTablet ? 140 : 180;
 
   return (
     <div style={{ display: "flex", gap: 0, marginBottom: 56, position: "relative" }}>
@@ -495,12 +561,30 @@ function MonthBlock({
           letterSpacing: "-0.02em",
           lineHeight: 1.25,
           margin: 0,
+          marginBottom: entries.length > 1 ? 8 : 0,
           background: C.grad,
           WebkitBackgroundClip: "text",
           WebkitTextFillColor: "transparent",
           backgroundClip: "text",
           textAlign: "right",
         }}>{month}</h2>
+
+        {/* Event count badge — shown when month has 2+ events */}
+        {entries.length > 1 && (
+          <div style={{
+            display: "flex", justifyContent: "flex-end",
+          }}>
+            <span style={{
+              fontFamily: FONT, fontSize: 10, fontWeight: 600,
+              color: C.violet, letterSpacing: "0.05em",
+              background: "rgba(124,85,255,0.08)",
+              border: "1px solid rgba(124,85,255,0.18)",
+              borderRadius: 20, padding: "2px 8px",
+            }}>
+              {entries.length} events
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Centre rail */}
@@ -529,36 +613,151 @@ function MonthBlock({
         )}
       </div>
 
-      {/* Right — entries */}
+      {/* Right — all entries for this month */}
       <div style={{ flex: 1, minWidth: 0 }}>
         {entries.map((entry, i) => (
-          <TimelineEntry key={i} {...entry} />
+          <TimelineEntry
+            key={i}
+            {...entry}
+            isLastInMonth={i === entries.length - 1}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 // TIMELINE DATA
-// ─────────────────────────────────────────────
+//
+// ▸ ORDER: newest month FIRST, oldest month LAST.
+// ▸ Each month has an `entries` array — add as many events as needed.
+// ▸ To add a new event to an existing month: add an object to its `entries`.
+// ▸ To add a brand new month: paste a new object at the TOP of this array.
+//
+// Entry shape:
+// {
+//   title: "Plain string" | <JSX with colored spans>,
+//   images: [
+//     { src: "/progress/filename.webp", caption: "Caption text" },
+//     // 1–3 images supported
+//   ],
+//   description: "Paragraph of text.",
+// }
+// ─────────────────────────────────────────────────────────────────────────────
 const TIMELINE = [
+  // ── MOST RECENT MONTH ─────────────────────────────────────────────────────
   {
-    month: "December 2025",
+    month: "This Month",
     entries: [
+      // ── Event 1 ──
       {
-        title: "Company Incorporated",
+        title: (
+          <>
+            <span style={{ color: C.pink }}>Creator Nexus 2.0</span> Preparation
+          </>
+        ),
         images: [
-          { src: "/progress/dec-incorporation.webp", caption: "Official registration documents" },
+          { src: "/progress/may-prep1.webp", caption: "Venue walk‑through"       },
+          { src: "/progress/may-prep2.webp", caption: "Speaker lineup planning"  },
         ],
         description:
-          "Nexfluence was officially registered in Riga, Latvia, marking the beginning of our journey to reshape the Baltic creator economy.",
+          "We're gearing up for our biggest event yet — a full‑day summit with international speakers, brand matchmaking sessions, and live content creation.",
       },
+      // ── Event 2 ──
+      {
+        title: (
+          <>
+            Platform <span style={{ color: C.violet }}>Beta Launch</span>
+          </>
+        ),
+        images: [
+          { src: "/progress/may-beta.webp", caption: "Beta dashboard preview" },
+        ],
+        description:
+          "Our closed beta went live to 30 selected brand partners, giving them early access to the campaign management dashboard and creator discovery tools.",
+      },
+      // ── ADD NEW EVENT HERE — copy the block above and paste below ──
     ],
   },
+
+  // ── APRIL 2026 ────────────────────────────────────────────────────────────
+  {
+    month: "April 2026",
+    entries: [
+      // ── Event 1 ──
+      {
+        title: (
+          <>
+            <span style={{ color: C.violet }}>Partnership</span> with LIMA
+          </>
+        ),
+        images: [
+          { src: "/progress/apr-lima.webp", caption: "Signed MOU with LIMA" },
+        ],
+        description:
+          "Nexfluence became the official influencer marketing partner for the Latvian Interactive Marketing Association, a major industry milestone.",
+      },
+      // ── Event 2 ──
+      {
+        title: (
+          <>
+            <span style={{ color: C.pink }}>Creator Fund</span> Announced
+          </>
+        ),
+        images: [
+          { src: "/progress/apr-fund.webp", caption: "Announcement at Riga TechHub" },
+        ],
+        description:
+          "We announced a €50,000 creator grant fund to support emerging Baltic content creators building original campaigns on the platform.",
+      },
+      // ── ADD NEW EVENT HERE ──
+    ],
+  },
+
+  // ── MARCH 2026 ────────────────────────────────────────────────────────────
+  {
+    month: "March 2026",
+    entries: [
+      // ── Event 1 ──
+      {
+        title: (
+          <>
+            Launched <span style={{ color: C.pink }}>Affiliate Engine</span>
+          </>
+        ),
+        images: [
+          { src: "/progress/mar-affiliate.webp", caption: "Dashboard screenshot" },
+        ],
+        description:
+          "We released the first version of our performance tracking tool, allowing brands to see exactly how each creator impacts their bottom line.",
+      },
+      // ── ADD NEW EVENT HERE ──
+    ],
+  },
+
+  // ── FEBRUARY 2026 ─────────────────────────────────────────────────────────
+  {
+    month: "February 2026",
+    entries: [
+      // ── Event 1 ──
+      {
+        title: "Onboarded 50+ New Creators",
+        images: [
+          { src: "/progress/feb-creators.webp", caption: "New creator headshots" },
+        ],
+        description:
+          "Our verification team carefully selected top talent, expanding the Nexfluence network to over 150 vetted influencers across the Baltics.",
+      },
+      // ── ADD NEW EVENT HERE ──
+    ],
+  },
+
+  // ── JANUARY 2026 ──────────────────────────────────────────────────────────
   {
     month: "January 2026",
     entries: [
+      // ── Event 1 ──
       {
         title: (
           <>
@@ -573,6 +772,7 @@ const TIMELINE = [
         description:
           "Our first large‑scale event brought together over 150 creators and 20 brands, sparking dozens of new collaborations right on the spot.",
       },
+      // ── Event 2 ──
       {
         title: (
           <>
@@ -586,71 +786,24 @@ const TIMELINE = [
         description:
           "Red Bull partnered with us for an exclusive product launch, leveraging our network of trusted Baltic creators for authentic promotion.",
       },
+      // ── ADD NEW EVENT HERE ──
     ],
   },
+
+  // ── DECEMBER 2025 — OLDEST ────────────────────────────────────────────────
   {
-    month: "February 2026",
+    month: "December 2025",
     entries: [
+      // ── Event 1 ──
       {
-        title: "Onboarded 50+ New Creators",
+        title: "Company Incorporated",
         images: [
-          { src: "/progress/feb-creators.webp", caption: "New creator headshots" },
+          { src: "/progress/dec-incorporation.webp", caption: "Official registration documents" },
         ],
         description:
-          "Our verification team carefully selected top talent, expanding the Nexfluence network to over 150 vetted influencers across the Baltics.",
+          "Nexfluence was officially registered in Riga, Latvia, marking the beginning of our journey to reshape the Baltic creator economy.",
       },
-    ],
-  },
-  {
-    month: "March 2026",
-    entries: [
-      {
-        title: (
-          <>
-            Launched <span style={{ color: C.pink }}>Affiliate Engine</span>
-          </>
-        ),
-        images: [
-          { src: "/progress/mar-affiliate.webp", caption: "Dashboard screenshot" },
-        ],
-        description:
-          "We released the first version of our performance tracking tool, allowing brands to see exactly how each creator impacts their bottom line.",
-      },
-    ],
-  },
-  {
-    month: "April 2026",
-    entries: [
-      {
-        title: (
-          <>
-            <span style={{ color: C.violet }}>Partnership</span> with LIMA
-          </>
-        ),
-        images: [
-          { src: "/progress/apr-lima.webp", caption: "Signed MOU with LIMA" },
-        ],
-        description:
-          "Nexfluence became the official influencer marketing partner for the Latvian Interactive Marketing Association, a major industry milestone.",
-      },
-    ],
-  },
-  {
-    month: "This Month",
-    entries: [
-      {
-        title: (
-          <>
-            <span style={{ color: C.pink }}>Creator Nexus 2.0</span> Preparation
-          </>
-        ),
-        images: [
-          { src: "/progress/may-prep1.webp", caption: "Venue walk‑through"       },
-          { src: "/progress/may-prep2.webp", caption: "Speaker lineup planning"  },
-        ],
-        description:
-          "We're gearing up for our biggest event yet — a full‑day summit with international speakers, brand matchmaking sessions, and live content creation.",
-      },
+      // ── ADD NEW EVENT HERE ──
     ],
   },
 ];
