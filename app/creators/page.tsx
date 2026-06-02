@@ -331,10 +331,10 @@ const TRAVEL_CREATORS: Creator[] = [
 ];
 
 const CATEGORIES = [
-  { id: "beauty",  label: "Beauty",  emoji: "✨", creators: BEAUTY_CREATORS,  accent: C.pink   },
-  { id: "fitness", label: "Fitness", emoji: "💪", creators: FITNESS_CREATORS, accent: C.violet },
-  { id: "food",    label: "Food",    emoji: "🍽️", creators: FOOD_CREATORS,    accent: C.indigo },
-  { id: "travel",  label: "Travel",  emoji: "🌍", creators: TRAVEL_CREATORS,  accent: C.pink   },
+  { id: "beauty",  label: "Beauty",  creators: BEAUTY_CREATORS,  accent: C.pink   },
+  { id: "fitness", label: "Fitness", creators: FITNESS_CREATORS, accent: C.violet },
+  { id: "food",    label: "Food",    creators: FOOD_CREATORS,    accent: C.indigo },
+  { id: "travel",  label: "Travel",  creators: TRAVEL_CREATORS,  accent: C.pink   },
 ];
 
 // ─────────────────────────────────────────────
@@ -474,7 +474,6 @@ function CategoryTabs({
               if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = C.cardBg;
             }}
           >
-            <span style={{ fontSize: isMobile ? 14 : 16 }}>{cat.emoji}</span>
             {cat.label}
           </button>
         );
@@ -679,7 +678,6 @@ function CategorySection({
 }) {
   const w        = useWindowWidth();
   const isMobile = w < 640;
-  const isTablet = w >= 640 && w < 1024;
 
   if (!creators.length) return null;
 

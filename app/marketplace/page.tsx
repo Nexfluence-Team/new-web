@@ -72,6 +72,22 @@ function siteOuter(w: number, mt = 96): React.CSSProperties {
 
 type CSSProps = React.CSSProperties;
 
+// ─────────────────────────────────────────────
+// ICON HELPER
+// Renders an SVG from /public/icons/
+// ─────────────────────────────────────────────
+function Icon({ name, size = 22, style }: { name: string; size?: number; style?: CSSProps }) {
+  return (
+    <img
+      src={`/icons/${name}.svg`}
+      width={size}
+      height={size}
+      alt=""
+      style={{ display: "block", flexShrink: 0, ...style }}
+    />
+  );
+}
+
 // ── Atoms ────────────────────────────────────────────────────────────────────
 
 function PillLabel({ children }: { children: React.ReactNode }) {
@@ -427,12 +443,12 @@ function CEOMessage() {
 // ── 4. Feature Preview Bento ─────────────────────────────────────────────────
 
 const FEATURES = [
-  { icon: "🔍", title: "Smart Creator Discovery",    desc: "Filter 500+ verified creators by niche, audience demographics, engagement rate, and Baltic location — not just follower count.", accent: C.violet },
-  { icon: "📊", title: "Live Performance Tracking",  desc: "Real-time dashboards for every campaign — clicks, conversions, and revenue tracked to the cent.",                               accent: C.pink   },
-  { icon: "🤝", title: "Managed Contracts",           desc: "Digital contracts, content briefs, approval workflows, and payments — all in one place.",                                     accent: C.indigo },
-  { icon: "⚡", title: "100% Performance-Based",     desc: "You only pay when real results are delivered. No upfront costs, no guessing.",                                                 accent: C.violet },
-  { icon: "🌍", title: "Baltic-Native",               desc: "Built for Latvia, Lithuania, and Estonia — the creators, the culture, the consumers.",                                        accent: C.pink   },
-  { icon: "♻️", title: "Long-Term Affiliate Engine", desc: "Promo codes, tracked links, and tiered commissions that keep working long after a campaign ends.",                             accent: C.indigo },
+  { iconName: "search",    title: "Smart Creator Discovery",    desc: "Filter 500+ verified creators by niche, audience demographics, engagement rate, and Baltic location — not just follower count.", accent: C.violet },
+  { iconName: "analytics", title: "Live Performance Tracking",  desc: "Real-time dashboards for every campaign — clicks, conversions, and revenue tracked to the cent.",                               accent: C.pink   },
+  { iconName: "Collab",    title: "Managed Contracts",          desc: "Digital contracts, content briefs, approval workflows, and payments — all in one place.",                                     accent: C.indigo },
+  { iconName: "spark",     title: "100% Performance-Based",     desc: "You only pay when real results are delivered. No upfront costs, no guessing.",                                                 accent: C.violet },
+  { iconName: "globe",     title: "Baltic-Native",              desc: "Built for Latvia, Lithuania, and Estonia — the creators, the culture, the consumers.",                                        accent: C.pink   },
+  { iconName: "cycle",     title: "Long-Term Affiliate Engine", desc: "Promo codes, tracked links, and tiered commissions that keep working long after a campaign ends.",                             accent: C.indigo },
 ];
 
 function FeatureCard({ feature }: { feature: typeof FEATURES[number] }) {
@@ -462,8 +478,10 @@ function FeatureCard({ feature }: { feature: typeof FEATURES[number] }) {
         width: 48, height: 48, borderRadius: 13,
         background: `${feature.accent}12`, border: `1px solid ${feature.accent}24`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 20, flexShrink: 0,
-      }}>{feature.icon}</div>
+        flexShrink: 0,
+      }}>
+        <Icon name={feature.iconName} size={22} />
+      </div>
       <h3 style={{ fontSize: 16, fontWeight: 700, color: C.ink, letterSpacing: "-0.02em", margin: 0, fontFamily: FONT }}>{feature.title}</h3>
       <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.75, margin: 0, fontFamily: FONT }}>{feature.desc}</p>
     </div>
@@ -552,8 +570,10 @@ function InterestForm() {
                 width: 64, height: 64, borderRadius: "50%",
                 background: `linear-gradient(135deg, ${C.violet}18, ${C.pink}10)`,
                 border: C.border, display: "flex", alignItems: "center",
-                justifyContent: "center", fontSize: 28, margin: "0 auto 20px",
-              }}>✅</div>
+                justifyContent: "center", margin: "0 auto 20px",
+              }}>
+                <Icon name="approve" size={28} />
+              </div>
               <h3 style={{ fontSize: 22, fontWeight: 800, color: C.ink, marginBottom: 10, fontFamily: FONT, letterSpacing: "-0.02em" }}>
                 You're on the list!
               </h3>

@@ -91,6 +91,22 @@ function siteOuter(w: number, mt = 96): React.CSSProperties {
 type CSSProps = React.CSSProperties;
 
 // ─────────────────────────────────────────────
+// ICON HELPER
+// Renders an SVG from /public/icons/
+// ─────────────────────────────────────────────
+function Icon({ name, size = 22, style }: { name: string; size?: number; style?: CSSProps }) {
+  return (
+    <img
+      src={`/icons/${name}.svg`}
+      width={size}
+      height={size}
+      alt=""
+      style={{ display: "block", flexShrink: 0, ...style }}
+    />
+  );
+}
+
+// ─────────────────────────────────────────────
 // ATOMS
 // ─────────────────────────────────────────────
 function PillLabel({ children }: { children: React.ReactNode }) {
@@ -199,7 +215,7 @@ function IconBox({ color, children }: { color: string; children: React.ReactNode
       width: 50, height: 50, borderRadius: 14,
       background: `${color}12`, border: `1px solid ${color}24`,
       display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: 22, flexShrink: 0,
+      flexShrink: 0,
     }}>{children}</div>
   );
 }
@@ -495,7 +511,9 @@ function StoryMission({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.violet} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-        <IconBox color={C.violet}>🎯</IconBox>
+        <IconBox color={C.violet}>
+          <Icon name="target" size={22} />
+        </IconBox>
         <div>
           <h3 style={{
             fontSize: 19, fontWeight: 700, color: C.ink,
@@ -516,7 +534,9 @@ function StoryVision({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.pink} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-        <IconBox color={C.pink}>🌍</IconBox>
+        <IconBox color={C.pink}>
+          <Icon name="globe" size={22} />
+        </IconBox>
         <div>
           <h3 style={{
             fontSize: 19, fontWeight: 700, color: C.ink,
@@ -536,7 +556,9 @@ function StoryOrigin({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.indigo} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-        <IconBox color={C.indigo}>⏳</IconBox>
+        <IconBox color={C.indigo}>
+          <Icon name="archive" size={22} />
+        </IconBox>
         <div>
           <h3 style={{
             fontSize: 19, fontWeight: 700, color: C.ink,
@@ -551,7 +573,7 @@ function StoryOrigin({ style }: { style?: CSSProps }) {
         </div>
       </div>
       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
-        {["🇱🇻 Latvia", "🇱🇹 Lithuania", "🇪🇪 Estonia"].map((c) => (
+        {["Latvia", "Lithuania", "Estonia"].map((c) => (
           <span key={c} style={{
             fontSize: 12, fontWeight: 600, padding: "5px 11px",
             borderRadius: 8, background: `${C.indigo}0e`,

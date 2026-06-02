@@ -89,6 +89,22 @@ function siteOuter(w: number, mt = 96): React.CSSProperties {
 type CSSProps = React.CSSProperties;
 
 // ─────────────────────────────────────────────
+// ICON HELPER
+// Renders an SVG from /public/icons/
+// ─────────────────────────────────────────────
+function Icon({ name, size = 22, style }: { name: string; size?: number; style?: CSSProps }) {
+  return (
+    <img
+      src={`/icons/${name}.svg`}
+      width={size}
+      height={size}
+      alt=""
+      style={{ display: "block", flexShrink: 0, ...style }}
+    />
+  );
+}
+
+// ─────────────────────────────────────────────
 // ATOMS
 // ─────────────────────────────────────────────
 function PillLabel({ children }: { children: React.ReactNode }) {
@@ -506,8 +522,10 @@ function ContactFormSection() {
                 width: 64, height: 64, borderRadius: "50%",
                 background: `linear-gradient(135deg, ${C.violet}18, ${C.pink}10)`,
                 border: C.border, display: "flex", alignItems: "center",
-                justifyContent: "center", fontSize: 28, margin: "0 auto 20px",
-              }}>✅</div>
+                justifyContent: "center", margin: "0 auto 20px",
+              }}>
+                <Icon name="approve" size={28} />
+              </div>
               <h3 style={{
                 fontSize: 22, fontWeight: 800, color: C.ink,
                 marginBottom: 10, fontFamily: FONT, letterSpacing: "-0.02em",
@@ -599,7 +617,7 @@ function ContactFormSection() {
           gap: isMobile ? 12 : 14,
         }}>
           <InfoCard
-            icon="✉️"
+            iconName="email"
             title="Email Us"
             lines={[
               "brands@nexfluence.eu",
@@ -609,7 +627,7 @@ function ContactFormSection() {
             accent={C.violet}
           />
           <InfoCard
-            icon="📍"
+            iconName="location"
             title="Visit Us"
             lines={[
               "Brīvības iela 123",
@@ -619,7 +637,7 @@ function ContactFormSection() {
             accent={C.pink}
           />
           <InfoCard
-            icon="🕐"
+            iconName="notify"
             title="Office Hours"
             lines={[
               "Mon – Fri",
@@ -636,9 +654,9 @@ function ContactFormSection() {
 }
 
 function InfoCard({
-  icon, title, lines, accent,
+  iconName, title, lines, accent,
 }: {
-  icon: string; title: string; lines: string[]; accent: string;
+  iconName: string; title: string; lines: string[]; accent: string;
 }) {
   const [hovered, setHovered] = useState(false);
   return (
@@ -666,8 +684,10 @@ function InfoCard({
         width: 44, height: 44, borderRadius: 12,
         background: `${accent}12`, border: `1px solid ${accent}22`,
         display: "flex", alignItems: "center", justifyContent: "center",
-        fontSize: 20, flexShrink: 0,
-      }}>{icon}</div>
+        flexShrink: 0,
+      }}>
+        <Icon name={iconName} size={20} />
+      </div>
       <h4 style={{
         fontSize: 16, fontWeight: 700, color: C.ink,
         letterSpacing: "-0.02em", margin: 0, fontFamily: FONT,
@@ -735,13 +755,16 @@ function VisitUs() {
           boxShadow: C.shadowSm,
           maxWidth: isMobile ? 220 : 280,
         }}>
-          <p style={{
-            fontSize: isMobile ? 13 : 14, fontWeight: 700, color: C.ink,
-            margin: 0, fontFamily: FONT,
-          }}>📍 Nexfluence HQ</p>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+            <Icon name="location" size={13} />
+            <p style={{
+              fontSize: isMobile ? 13 : 14, fontWeight: 700, color: C.ink,
+              margin: 0, fontFamily: FONT,
+            }}>Nexfluence HQ</p>
+          </div>
           <p style={{
             fontSize: isMobile ? 12 : 13, color: C.inkDim,
-            margin: "4px 0 0", fontFamily: FONT,
+            margin: 0, fontFamily: FONT,
           }}>Brīvības iela 123, Riga, Latvia</p>
         </div>
       </div>
