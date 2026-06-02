@@ -23,6 +23,11 @@ import Image from "next/image";
 import { useState, useEffect, useRef, type FormEvent } from "react";
 
 // ─────────────────────────────────────────────
+// API
+// ─────────────────────────────────────────────
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://your-backend.onrender.com";
+
+// ─────────────────────────────────────────────
 // FONT
 // ─────────────────────────────────────────────
 const FONT = "'Rubik', sans-serif";
@@ -90,7 +95,6 @@ type CSSProps = React.CSSProperties;
 
 // ─────────────────────────────────────────────
 // ICON HELPER
-// Renders an SVG from /public/icons/
 // ─────────────────────────────────────────────
 function Icon({ name, size = 22, style }: { name: string; size?: number; style?: CSSProps }) {
   return (
@@ -179,7 +183,7 @@ function Btn({ href, onClick, variant, children, style, type, disabled }: BtnPro
 }
 
 // ─────────────────────────────────────────────
-// FOCUSED INPUT — tracks focus state for ring
+// FORM ATOMS
 // ─────────────────────────────────────────────
 function Field({
   label,
@@ -287,7 +291,7 @@ function StyledSelect({
         width: "100%", padding: "13px 16px",
         borderRadius: 10, boxSizing: "border-box",
         border: focused ? `1px solid ${C.violet}` : C.border,
-        background: focused ? "#fff" : C.bgSub,
+        backgroundColor: focused ? "#fff" : C.bgSub,         // ← FIX: was background
         fontSize: 14, color: C.ink, fontFamily: FONT,
         outline: "none", appearance: "none",
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(10,6,18,0.4)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
@@ -295,7 +299,7 @@ function StyledSelect({
         backgroundPosition: "right 14px center",
         paddingRight: 36,
         boxShadow: focused ? `0 0 0 3px rgba(124,85,255,0.10)` : "none",
-        transition: "border-color 0.18s, box-shadow 0.18s, background 0.18s",
+        transition: "border-color 0.18s, box-shadow 0.18s, background-color 0.18s", // ← FIX: was background
         cursor: "pointer",
       }}
     >
@@ -486,17 +490,44 @@ function ContactFormSection() {
   const isTablet = w >= 640 && w < 1024;
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending]     = useState(false);
+  const [error, setError]         = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    // Replace this timeout with your actual API call
-    setTimeout(() => {
-      setSending(false);
+    setError(null);
+
+    const data = new FormData(e.currentTarget);
+    const body = {
+      name:    data.get("name")    as string,
+      email:   data.get("email")   as string,
+      type:    data.get("type")    as string,
+      subject: data.get("subject") as string,
+      message: data.get("message") as string,
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/contact`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(body),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        setError(json.message ?? "Something went wrong. Please try again.");
+        return;
+      }
+
       setSubmitted(true);
       formRef.current?.reset();
-    }, 1200);
+    } catch {
+      setError("Network error — please check your connection and try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -596,6 +627,18 @@ function ContactFormSection() {
                   rows={5}
                 />
               </Field>
+
+              {/* ── Error banner ── */}
+              {error && (
+                <div style={{
+                  padding: "12px 16px", borderRadius: 10,
+                  background: "rgba(255,51,188,0.07)",
+                  border: "1px solid rgba(255,51,188,0.25)",
+                  fontSize: 13, color: "#c0005a", fontFamily: FONT,
+                }}>
+                  {error}
+                </div>
+              )}
 
               <Btn
                 type="submit"
@@ -776,6 +819,7 @@ function VisitUs() {
     </section>
   );
 }
+
 // ─────────────────────────────────────────────
 // 5. FINAL CTA
 // ─────────────────────────────────────────────

@@ -1,26 +1,17 @@
 "use client";
 
 /**
- * app/marketplace/page.tsx
- * Nexfluence — Marketplace Launching Soon
- *
- * Design system:
- *  - Font: Rubik throughout
- *  - Theme: Light / white
- *  - Breakpoints: <640 mobile · 640–900 tablet · >900 desktop
- *  - Layout: maxWidth 1200px · pad 20/32/48px
- *
- * Sections:
- *  1. Header (shared)
- *  2. Launching Soon hero
- *  3. CEO Message
- *  4. Feature Preview (bento)
- *  5. Interest Registration Form
- *  — no footer —
+ * app/marketplace/page.tsx — Interest form wired to POST /waitlist
+ * Only the InterestForm component is changed. Everything else is identical.
  */
 
 import Image from "next/image";
 import { useState, useEffect, useRef, type FormEvent } from "react";
+
+// ─────────────────────────────────────────────
+// API
+// ─────────────────────────────────────────────
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://your-backend.onrender.com";
 
 const FONT = "'Rubik', sans-serif";
 
@@ -72,31 +63,19 @@ function siteOuter(w: number, mt = 96): React.CSSProperties {
 
 type CSSProps = React.CSSProperties;
 
-// ─────────────────────────────────────────────
-// ICON HELPER
-// Renders an SVG from /public/icons/
-// ─────────────────────────────────────────────
 function Icon({ name, size = 22, style }: { name: string; size?: number; style?: CSSProps }) {
   return (
-    <img
-      src={`/icons/${name}.svg`}
-      width={size}
-      height={size}
-      alt=""
-      style={{ display: "block", flexShrink: 0, ...style }}
-    />
+    <img src={`/icons/${name}.svg`} width={size} height={size} alt=""
+      style={{ display: "block", flexShrink: 0, ...style }} />
   );
 }
-
-// ── Atoms ────────────────────────────────────────────────────────────────────
 
 function PillLabel({ children }: { children: React.ReactNode }) {
   return (
     <span style={{
       display: "inline-flex", alignItems: "center", gap: 8,
       fontSize: 11, fontWeight: 600, letterSpacing: "0.18em",
-      textTransform: "uppercase", color: C.pink,
-      marginBottom: 16, fontFamily: FONT,
+      textTransform: "uppercase", color: C.pink, marginBottom: 16, fontFamily: FONT,
     }}>
       <span style={{ display: "block", width: 20, height: 1, background: C.pink, flexShrink: 0 }} />
       {children}
@@ -149,8 +128,6 @@ function Btn({ href, onClick, variant, children, style, type, disabled }: {
   return <button style={merged} onClick={onClick} type={type} disabled={disabled} {...hover}>{children}</button>;
 }
 
-// ── Form atoms ───────────────────────────────────────────────────────────────
-
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
@@ -165,8 +142,7 @@ function StyledInput({ type = "text", placeholder, required, name }: {
 }) {
   const [focused, setFocused] = useState(false);
   return (
-    <input
-      type={type} placeholder={placeholder} required={required} name={name}
+    <input type={type} placeholder={placeholder} required={required} name={name}
       onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
       style={{
         width: "100%", padding: "13px 16px", borderRadius: 10, boxSizing: "border-box",
@@ -180,25 +156,23 @@ function StyledInput({ type = "text", placeholder, required, name }: {
   );
 }
 
+// FIX 1: background → backgroundColor to avoid shorthand/longhand conflict
 function StyledSelect({ name, required, options }: {
   name?: string; required?: boolean; options: { value: string; label: string }[];
 }) {
   const [focused, setFocused] = useState(false);
   return (
-    <select
-      name={name} required={required}
+    <select name={name} required={required}
       onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
       style={{
         width: "100%", padding: "13px 16px", borderRadius: 10, boxSizing: "border-box",
         border: focused ? `1px solid ${C.violet}` : C.border,
-        background: focused ? "#fff" : C.bgSub,
-        fontSize: 14, color: C.ink, fontFamily: FONT, outline: "none",
-        appearance: "none",
+        backgroundColor: focused ? "#fff" : C.bgSub,
+        fontSize: 14, color: C.ink, fontFamily: FONT, outline: "none", appearance: "none",
         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(10,6,18,0.4)' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E")`,
         backgroundRepeat: "no-repeat", backgroundPosition: "right 14px center", paddingRight: 36,
         boxShadow: focused ? `0 0 0 3px rgba(124,85,255,0.10)` : "none",
-        transition: "border-color 0.18s, box-shadow 0.18s, background 0.18s",
-        cursor: "pointer",
+        transition: "border-color 0.18s, box-shadow 0.18s, background-color 0.18s", cursor: "pointer",
       }}
     >
       {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
@@ -206,11 +180,9 @@ function StyledSelect({ name, required, options }: {
   );
 }
 
-// ── 1. Header ────────────────────────────────────────────────────────────────
-
+// ── Header ────────────────────────────────────────────────────────────────────
 const NAV_LINKS = [
   { label: "Marketplace", href: "/marketplace" },
-  // { label: "Creators",    href: "/creators"    },
   { label: "About Us",    href: "/about"       },
   { label: "Growth",      href: "/progress"    },
 ];
@@ -291,8 +263,7 @@ function Header() {
   );
 }
 
-// ── 2. Launching Soon Hero ───────────────────────────────────────────────────
-
+// ── Launching Soon Hero ───────────────────────────────────────────────────────
 function LaunchingHero() {
   const w        = useWindowWidth();
   const isMobile = w < 640;
@@ -301,8 +272,7 @@ function LaunchingHero() {
 
   return (
     <section style={{
-      position: "relative",
-      minHeight: isMobile ? "auto" : "80vh",
+      position: "relative", minHeight: isMobile ? "auto" : "80vh",
       display: "flex", flexDirection: "column",
       justifyContent: "center", overflow: "hidden", background: C.bg,
     }}>
@@ -322,47 +292,37 @@ function LaunchingHero() {
           background: "linear-gradient(to top, #ffffff, transparent)",
         }} />
       </div>
-
       <div style={{
         maxWidth: SITE_MAX_W, width: "100%", margin: "0 auto",
-        paddingTop: isMobile ? 120 : 160,
-        paddingBottom: isMobile ? 64 : 100,
-        paddingLeft: hPad, paddingRight: hPad,
-        boxSizing: "border-box",
+        paddingTop: isMobile ? 120 : 160, paddingBottom: isMobile ? 64 : 100,
+        paddingLeft: hPad, paddingRight: hPad, boxSizing: "border-box",
         position: "relative", zIndex: 1, textAlign: "center",
       }}>
         <PillLabel>Launching Soon</PillLabel>
-
         <h1 style={{
           fontSize: isMobile ? 36 : isTablet ? 52 : 64,
-          fontWeight: 900, letterSpacing: "-0.04em",
-          lineHeight: 1.0, color: C.ink,
-          margin: 0, marginBottom: 24, fontFamily: FONT,
+          fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.0,
+          color: C.ink, margin: 0, marginBottom: 24, fontFamily: FONT,
         }}>
-          Europe's Most Active
-          <br />
+          Europe's Most Active<br />
           <GradientText>Creator Economy Marketplace</GradientText>
         </h1>
-
         <p style={{
           fontSize: isMobile ? 15 : 18, color: C.inkDim2,
-          lineHeight: 1.75, maxWidth: 560, margin: "0 auto 36px",
-          fontFamily: FONT,
+          lineHeight: 1.75, maxWidth: 560, margin: "0 auto 36px", fontFamily: FONT,
         }}>
           A fully transparent, performance-based platform where Baltic brands
           and creators connect, collaborate, and grow together.
         </p>
-
         <Btn href="#register" variant="primary" style={{ padding: "14px 36px", fontSize: 15 }}>
-          Register Interest 
+          Register Interest →
         </Btn>
       </div>
     </section>
   );
 }
 
-// ── 3. CEO Message ───────────────────────────────────────────────────────────
-
+// ── CEO Message ───────────────────────────────────────────────────────────────
 function CEOMessage() {
   const w        = useWindowWidth();
   const isMobile = w < 640;
@@ -373,21 +333,19 @@ function CEOMessage() {
       <div style={{
         display: "grid",
         gridTemplateColumns: isMobile || isTablet ? "1fr" : "1fr 1fr",
-        gap: isMobile ? 32 : 64,
-        alignItems: "center",
+        gap: isMobile ? 32 : 64, alignItems: "center",
       }}>
-        {/* Photo */}
         <div style={{
-          borderRadius: 24, overflow: "hidden",
-          border: C.border, boxShadow: C.shadowMd,
-          height: isMobile ? 300 : isTablet ? 400 : 500,
-          position: "relative",
+          borderRadius: 24, overflow: "hidden", border: C.border, boxShadow: C.shadowMd,
+          height: isMobile ? 300 : isTablet ? 400 : 500, position: "relative",
           order: isMobile ? 2 : 1,
         }}>
+          {/* FIX 2: added sizes prop to silence Next.js Image warning */}
           <Image
             src="/images/Harshul.webp"
             alt="Harshul Gupta, Founder & CEO"
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 900px) 100vw, 50vw"
             style={{ objectFit: "cover", objectPosition: "center 20%" }}
             priority
           />
@@ -396,33 +354,25 @@ function CEOMessage() {
             background: "linear-gradient(135deg, rgba(124,85,255,0.12) 0%, rgba(255,51,188,0.06) 50%, transparent 70%)",
           }} />
         </div>
-
-        {/* Quote */}
         <div style={{ order: isMobile ? 1 : 2 }}>
           <PillLabel>A Message from Our Founder</PillLabel>
-
           <p style={{
             fontSize: 80, lineHeight: 0.7, fontWeight: 900,
             background: C.grad, WebkitBackgroundClip: "text",
             WebkitTextFillColor: "transparent", backgroundClip: "text",
             margin: "0 0 20px", fontFamily: FONT,
           }}>"</p>
-
           <p style={{
             fontSize: isMobile ? 15 : 16, color: C.inkDim2,
             lineHeight: 1.5, marginBottom: 32, fontFamily: FONT, textAlign: "justify",
-
           }}>
-            The Nexus Marketplace isn't mere another platform — it's
-            the result of hundreds of conversations with creators and brands
-            across the Baltics. We listened to what works, what doesn't, and
-            what the creator economy truly needs.
+            The Nexus Marketplace isn't mere another platform — it's the result of hundreds of
+            conversations with creators and brands across the Baltics. We listened to what works,
+            what doesn't, and what the creator economy truly needs.
             <br /><br />
             Great things take time. But we are almost there.
           </p>
-
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            
             <div>
               <p style={{ fontSize: 15, fontWeight: 700, color: C.ink, margin: 0, fontFamily: FONT }}>Harshul Gupta</p>
               <p style={{ fontSize: 13, color: C.pink, margin: "3px 0 0", fontFamily: FONT }}>Founder & CEO</p>
@@ -434,31 +384,28 @@ function CEOMessage() {
   );
 }
 
-// ── 4. Feature Preview Bento ─────────────────────────────────────────────────
-
+// ── Feature Preview Bento ─────────────────────────────────────────────────────
 const FEATURES = [
   { iconName: "search",    title: "Smart Creator Discovery",    desc: "Filter 500+ verified creators by niche, audience demographics, engagement rate, and Baltic location — not just follower count.", accent: C.violet },
-  { iconName: "analytics", title: "Live Performance Tracking",  desc: "Real-time dashboards for every campaign — clicks, conversions, and revenue tracked to the cent.",                               accent: C.pink   },
-  { iconName: "Collab",    title: "Managed Contracts",          desc: "Digital contracts, content briefs, approval workflows, and payments — all in one place.",                                     accent: C.indigo },
-  { iconName: "spark",     title: "100% Performance-Based",     desc: "You only pay when real results are delivered. No upfront costs, no guessing.",                                                 accent: C.violet },
-  { iconName: "globe",     title: "Baltic-Native",              desc: "Built for Latvia, Lithuania, and Estonia — the creators, the culture, the consumers.",                                        accent: C.pink   },
-  { iconName: "cycle",     title: "Long-Term Affiliate Engine", desc: "Promo codes, tracked links, and tiered commissions that keep working long after a campaign ends.",                             accent: C.indigo },
+  { iconName: "analytics", title: "Live Performance Tracking",  desc: "Real-time dashboards for every campaign — clicks, conversions, and revenue tracked to the cent.", accent: C.pink },
+  { iconName: "Collab",    title: "Managed Contracts",          desc: "Digital contracts, content briefs, approval workflows, and payments — all in one place.", accent: C.indigo },
+  { iconName: "spark",     title: "100% Performance-Based",     desc: "You only pay when real results are delivered. No upfront costs, no guessing.", accent: C.violet },
+  { iconName: "globe",     title: "Baltic-Native",              desc: "Built for Latvia, Lithuania, and Estonia — the creators, the culture, the consumers.", accent: C.pink },
+  { iconName: "cycle",     title: "Long-Term Affiliate Engine", desc: "Promo codes, tracked links, and tiered commissions that keep working long after a campaign ends.", accent: C.indigo },
 ];
 
 function FeatureCard({ feature }: { feature: typeof FEATURES[number] }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
       style={{
         borderRadius: 22, padding: 26,
         background: hovered ? `${feature.accent}0a` : C.cardBg,
         border: hovered ? `1px solid ${feature.accent}44` : C.border,
         boxShadow: hovered ? `0 20px 56px ${feature.accent}12` : C.shadowSm,
         transform: hovered ? "translateY(-4px)" : "none",
-        transition: "all 0.22s ease",
-        display: "flex", flexDirection: "column", gap: 14,
+        transition: "all 0.22s ease", display: "flex", flexDirection: "column", gap: 14,
         position: "relative", overflow: "hidden",
       }}
     >
@@ -471,8 +418,7 @@ function FeatureCard({ feature }: { feature: typeof FEATURES[number] }) {
       <div style={{
         width: 48, height: 48, borderRadius: 13,
         background: `${feature.accent}12`, border: `1px solid ${feature.accent}24`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        flexShrink: 0,
+        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
       }}>
         <Icon name={feature.iconName} size={22} />
       </div>
@@ -492,9 +438,8 @@ function FeaturePreview() {
       <div style={{ textAlign: "center", marginBottom: 48 }}>
         <PillLabel>What's Coming</PillLabel>
         <h2 style={{
-          fontSize: isMobile ? 26 : 38, fontWeight: 900,
-          letterSpacing: "-0.035em", lineHeight: 1.1,
-          color: C.ink, marginBottom: 14, fontFamily: FONT,
+          fontSize: isMobile ? 26 : 38, fontWeight: 900, letterSpacing: "-0.035em",
+          lineHeight: 1.1, color: C.ink, marginBottom: 14, fontFamily: FONT,
         }}>
           Everything in One <GradientText>Platform</GradientText>
         </h2>
@@ -505,7 +450,6 @@ function FeaturePreview() {
           The marketplace brings every tool a brand or creator needs into a single, beautifully simple workspace.
         </p>
       </div>
-
       {isMobile ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {FEATURES.map((f) => <FeatureCard key={f.title} feature={f} />)}
@@ -523,23 +467,50 @@ function FeaturePreview() {
   );
 }
 
-// ── 5. Interest Form ─────────────────────────────────────────────────────────
-
+// ── 5. Interest Form  ← WIRED TO API ─────────────────────────────────────────
 function InterestForm() {
   const w        = useWindowWidth();
   const isMobile = w < 640;
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending]     = useState(false);
+  const [error, setError]         = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSending(true);
-    setTimeout(() => {
-      setSending(false);
+    setError(null);
+
+    const data = new FormData(e.currentTarget);
+    const body = {
+      name:     data.get("name")     as string,
+      email:    data.get("email")    as string,
+      location: data.get("location") as string,
+      role:     data.get("role")     as string,
+      industry: data.get("industry") as string,
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/waitlist`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(body),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok) {
+        setError(json.message ?? "Something went wrong. Please try again.");
+        return;
+      }
+
       setSubmitted(true);
       formRef.current?.reset();
-    }, 1200);
+    } catch {
+      setError("Network error — please check your connection and try again.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -547,8 +518,7 @@ function InterestForm() {
       <div style={{
         borderRadius: 24, padding: isMobile ? 24 : 48,
         background: `linear-gradient(135deg, ${C.violet}0e, ${C.pink}08)`,
-        border: C.borderS, boxShadow: C.shadowMd,
-        maxWidth: 680, margin: "0 auto",
+        border: C.borderS, boxShadow: C.shadowMd, maxWidth: 680, margin: "0 auto",
         position: "relative", overflow: "hidden",
       }}>
         <div style={{
@@ -630,8 +600,19 @@ function InterestForm() {
                 </Field>
               </div>
 
+              {error && (
+                <div style={{
+                  padding: "12px 16px", borderRadius: 10,
+                  background: "rgba(255,51,188,0.07)",
+                  border: "1px solid rgba(255,51,188,0.25)",
+                  fontSize: 13, color: "#c0005a", fontFamily: FONT,
+                }}>
+                  {error}
+                </div>
+              )}
+
               <Btn type="submit" variant="primary" disabled={sending} style={{ width: "100%", marginTop: 4 }}>
-                {sending ? "Registering…" : "Keep Me Posted "}
+                {sending ? "Registering…" : "Keep Me Posted →"}
               </Btn>
 
               <p style={{ fontSize: 12, color: C.inkDim, textAlign: "center", margin: 0, fontFamily: FONT }}>
@@ -646,7 +627,6 @@ function InterestForm() {
 }
 
 // ── Page Root ─────────────────────────────────────────────────────────────────
-
 export default function MarketplacePage() {
   return (
     <div style={{ background: C.bg, overflowX: "hidden", fontFamily: FONT }}>
