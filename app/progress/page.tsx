@@ -187,7 +187,7 @@ function Btn({
 // ─────────────────────────────────────────────
 const NAV_LINKS = [
   { label: "Marketplace", href: "/marketplace" },
-  { label: "Creators",    href: "/creators"    },
+  // { label: "Creators",    href: "/creators"    },
   { label: "About Us",    href: "/about"       },
   { label: "Growth",      href: "/progress"    },
 ];

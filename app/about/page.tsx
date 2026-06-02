@@ -12,9 +12,9 @@
  *
  * Sections:
  *  1. Header
- *  2. Founder Hero
+ *  2. Hero Banner (full-width image)
  *  3. Our Story (bento grid)
- *  4. Team
+ *  4. Team  (founder compact card + team grid)
  *  5. Events & Community
  *  6. Sponsors Marquee
  *  7. Final CTA
@@ -28,6 +28,28 @@ import { useState, useEffect } from "react";
 // FONT
 // ─────────────────────────────────────────────
 const FONT = "'Rubik', sans-serif";
+
+// ─────────────────────────────────────────────
+// INLINE CSS — keyframes + marquee animation
+// injected via <style> tag so it actually runs
+// ─────────────────────────────────────────────
+const GLOBAL_CSS = `
+  @keyframes marquee-left {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-left 28s linear infinite;
+    will-change: transform;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    z-index: 3;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+`;
 
 // ─────────────────────────────────────────────
 // RESPONSIVE HOOK
@@ -92,7 +114,6 @@ type CSSProps = React.CSSProperties;
 
 // ─────────────────────────────────────────────
 // ICON HELPER
-// Renders an SVG from /public/icons/
 // ─────────────────────────────────────────────
 function Icon({ name, size = 22, style }: { name: string; size?: number; style?: CSSProps }) {
   return (
@@ -225,7 +246,7 @@ function IconBox({ color, children }: { color: string; children: React.ReactNode
 // ─────────────────────────────────────────────
 const NAV_LINKS = [
   { label: "Marketplace", href: "/marketplace" },
-  { label: "Creators",    href: "/creators"    },
+  // { label: "Creators",    href: "/creators"    },
   { label: "About Us",    href: "/about"       },
   { label: "Growth",      href: "/progress"    },
 ];
@@ -312,7 +333,7 @@ function Header() {
           <a href="/contact" onClick={() => setMenuOpen(false)} style={{
             fontSize: 15, fontWeight: 600, color: C.pink,
             textDecoration: "none", fontFamily: FONT,
-          }}>Contact Us →</a>
+          }}>Contact Us</a>
         </div>
       )}
     </header>
@@ -320,136 +341,89 @@ function Header() {
 }
 
 // ─────────────────────────────────────────────
-// 2. FOUNDER HERO
+// 2. HERO BANNER
+// Full-width image constrained to site maxWidth.
+// No founder portrait here — that moves above team.
 // ─────────────────────────────────────────────
-function FounderHero() {
+function HeroBanner() {
   const w        = useWindowWidth();
   const isMobile = w < 640;
-  const isTablet = w >= 640 && w < 900;
   const hPad     = isMobile ? 20 : w < 900 ? 32 : 48;
+  const bannerH  = isMobile ? 220 : w < 900 ? 340 : 480;
 
   return (
     <section style={{
-      position: "relative", minHeight: "100vh",
-      display: "flex", flexDirection: "column",
-      justifyContent: "center", overflow: "hidden", background: C.bg,
+      paddingTop: isMobile ? 72 : 80,  // clear fixed header
+      background: C.bg,
     }}>
-      {/* Background */}
-      <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
-        <div style={{
-          position: "absolute", inset: 0,
-          background: "radial-gradient(ellipse 80% 60% at 50% 40%, rgba(124,85,255,0.09) 0%, rgba(255,51,188,0.04) 40%, transparent 70%)",
-        }} />
-        <div style={{
-          position: "absolute", inset: 0,
-          backgroundImage: "linear-gradient(rgba(124,85,255,0.055) 1px, transparent 1px), linear-gradient(90deg, rgba(124,85,255,0.055) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-          maskImage: "radial-gradient(ellipse 70% 70% at 50% 40%, black 40%, transparent 80%)",
-        }} />
-        <div style={{
-          position: "absolute", bottom: 0, left: 0, right: 0, height: 200,
-          background: "linear-gradient(to top, #ffffff, transparent)",
-        }} />
-      </div>
-
-      {/* Main content grid */}
       <div style={{
-        maxWidth: SITE_MAX_W, width: "100%", margin: "0 auto",
-        paddingTop: isMobile ? 120 : 150,
-        paddingBottom: isMobile ? 40 : isTablet ? 48 : 100,
-        paddingLeft: hPad, paddingRight: hPad,
+        maxWidth: SITE_MAX_W,
+        margin: "0 auto",
+        paddingLeft: hPad,
+        paddingRight: hPad,
         boxSizing: "border-box",
-        display: "grid",
-        gridTemplateColumns: !isMobile && !isTablet ? "1fr 1fr" : "1fr",
-        gap: isMobile ? 32 : 48,
-        alignItems: "center",
-        position: "relative", zIndex: 1,
       }}>
-        {/* Left — copy */}
-        <div>
-          <PillLabel>Our Founder</PillLabel>
-          <h1 style={{
-            fontSize: isMobile ? 32 : isTablet ? 44 : 56,
-            fontWeight: 900, letterSpacing: "-0.04em",
-            lineHeight: 1.05, color: C.ink,
-            margin: 0, marginBottom: 24, fontFamily: FONT,
-          }}>
-            Building the{" "}
-            <GradientText>Future of Creator</GradientText>
-            <br />
-            Economy in the Baltics
-          </h1>
-          <p style={{
-            fontSize: isMobile ? 15 : isTablet ? 16 : 18,
-            color: C.inkDim2, lineHeight: 1.75,
-            maxWidth: 480, marginBottom: 24, fontFamily: FONT,
-          }}>
-            "I started Nexfluence to solve a problem I lived every day —
-            the disconnect between brands and authentic Baltic creators.
-            We've grown into the region's first performance‑based influencer
-            platform because we never forgot why we began: real people,
-            real stories, real results."
-          </p>
-          <p style={{
-            fontSize: 14, color: C.inkDim, marginBottom: 36, fontFamily: FONT,
-          }}>
-            <strong style={{ color: C.ink, fontWeight: 700 }}>Artūrs</strong>
-            {" "}· Founder & CEO, Nexfluence
-          </p>
-          <Btn href="#story" variant="primary">Our Story ↓</Btn>
-        </div>
-
-        {/* Right — portrait (desktop only in grid) */}
-        {!isMobile && !isTablet && (
-          <div style={{
-            position: "relative", width: "100%", height: 500,
-            borderRadius: 24, overflow: "hidden",
-            border: "1px solid rgba(124,85,255,0.18)",
-            boxShadow: "0 24px 64px rgba(124,85,255,0.16)",
-          }}>
-            <Image
-              src="/founder.webp"
-              alt="Artūrs, Founder & CEO"
-              fill
-              style={{ objectFit: "cover", objectPosition: "center 20%" }}
-              priority
-            />
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "linear-gradient(135deg, rgba(124,85,255,0.15) 0%, rgba(255,51,188,0.08) 50%, transparent 70%)",
-            }} />
-          </div>
-        )}
-      </div>
-
-      {/* Tablet / Mobile — portrait below text */}
-      {(isMobile || isTablet) && (
+        {/* Banner image */}
         <div style={{
-          maxWidth: SITE_MAX_W, width: "100%", margin: "0 auto",
-          paddingLeft: hPad, paddingRight: hPad,
-          paddingBottom: 80, boxSizing: "border-box",
-          position: "relative", zIndex: 1,
+          position: "relative",
+          width: "100%",
+          height: bannerH,
+          borderRadius: isMobile ? 16 : 24,
+          overflow: "hidden",
+          border: "1px solid rgba(124,85,255,0.18)",
+          boxShadow: "0 16px 56px rgba(124,85,255,0.14)",
         }}>
+          <Image
+            src="/images/Lecture.webp"
+            alt="Nexfluence event — creators gathered"
+            fill
+            style={{ objectFit: "cover", objectPosition: "center 30%" }}
+            priority
+          />
+          {/* Dark overlay for legibility */}
           <div style={{
-            position: "relative", width: "100%",
-            height: isMobile ? 280 : 400,
-            borderRadius: 20, overflow: "hidden",
-            border: "1px solid rgba(124,85,255,0.18)",
-            boxShadow: "0 16px 48px rgba(124,85,255,0.14)",
+            position: "absolute", inset: 0,
+            background: "linear-gradient(to top, rgba(10,6,18,0.62) 0%, rgba(10,6,18,0.18) 55%, transparent 100%)",
+          }} />
+          {/* Violet tint */}
+          <div style={{
+            position: "absolute", inset: 0,
+            background: "linear-gradient(135deg, rgba(124,85,255,0.18) 0%, rgba(255,51,188,0.08) 50%, transparent 70%)",
+          }} />
+          {/* Text overlay */}
+          <div style={{
+            position: "absolute",
+            bottom: isMobile ? 20 : 32,
+            left: isMobile ? 20 : 36,
+            zIndex: 2,
           }}>
-            <Image
-              src="/founder.webp"
-              alt="Artūrs, Founder & CEO"
-              fill
-              style={{ objectFit: "cover", objectPosition: "center 20%" }}
-            />
-            <div style={{
-              position: "absolute", inset: 0,
-              background: "linear-gradient(135deg, rgba(124,85,255,0.12) 0%, rgba(255,51,188,0.06) 50%, transparent 70%)",
-            }} />
+            {/* <p style={{
+              fontFamily: FONT,
+              fontSize: isMobile ? 11 : 12,
+              fontWeight: 600,
+              color: C.pink,
+              letterSpacing: "0.16em",
+              textTransform: "uppercase",
+              margin: "0 0 8px",
+            }}>
+              Our Story
+            </p> */}
+            <h1 style={{
+              fontFamily: FONT,
+              fontSize: isMobile ? 24 : w < 900 ? 34 : 46,
+              fontWeight: 900,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.1,
+              color: "#ffffff",
+              margin: 0,
+              textShadow: "0 2px 20px rgba(0,0,0,0.4)",
+              maxWidth: isMobile ? 280 : 560,
+            }}>
+              Building the Future of Creator Economy in the Baltics
+            </h1>
           </div>
         </div>
-      )}
+      </div>
     </section>
   );
 }
@@ -587,6 +561,8 @@ function StoryOrigin({ style }: { style?: CSSProps }) {
 
 // ─────────────────────────────────────────────
 // 4. TEAM
+// Founder compact card sits full-width above the team grid.
+// Card is half the previous height — horizontal layout, photo left.
 // ─────────────────────────────────────────────
 interface TeamMember { name: string; role: string; photo: string; linkedin?: string; }
 
@@ -598,6 +574,93 @@ const TEAM: TeamMember[] = [
   { name: "Elīna Siliņa",    role: "Content Strategist",        photo: "/team/member5.webp" },
   { name: "Kārlis Vītols",   role: "Engineering Lead",          photo: "/team/member6.webp" },
 ];
+
+// Compact founder card — photo left, bio right, ~240px tall
+function FounderCard() {
+  const w        = useWindowWidth();
+  const isMobile = w < 640;
+
+  return (
+    <div style={{
+      display: "grid",
+      gridTemplateColumns: isMobile ? "100px 1fr" : "180px 1fr",
+      borderRadius: 20,
+      overflow: "hidden",
+      border: "1px solid rgba(124,85,255,0.20)",
+      boxShadow: "0 8px 32px rgba(124,85,255,0.12)",
+      background: "#fff",
+      marginBottom: isMobile ? 12 : 14,
+    }}>
+      {/* Photo */}
+      <div style={{
+        position: "relative",
+        minHeight: isMobile ? 140 : 200,
+      }}>
+        <Image
+          src="/images/Harshul.webp"
+          alt="Harshul Gupta, Founder & CEO"
+          fill
+          style={{ objectFit: "cover", objectPosition: "center 20%",     transform: "scaleX(-1)",
+ }}
+        />
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(135deg, rgba(124,85,255,0.10) 0%, rgba(255,51,188,0.05) 50%, transparent 70%)",
+        }} />
+      </div>
+
+      {/* Bio */}
+      <div style={{
+        padding: isMobile ? "16px 18px" : "22px 28px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 6,
+        background: "#fff",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          <h3 style={{
+            fontFamily: FONT,
+            fontSize: isMobile ? 16 : 20,
+            fontWeight: 900,
+            letterSpacing: "-0.03em",
+            color: C.ink,
+            margin: 0,
+          }}>
+            Harshul Gupta
+          </h3>
+          {/* Gradient badge */}
+          {/* <span style={{
+            fontSize: 10,
+            fontWeight: 700,
+            letterSpacing: "0.08em",
+            background: C.grad,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
+            fontFamily: FONT,
+          }}>
+            Founder & CEO
+          </span> */}
+        </div>
+        {/* Gradient divider */}
+        <div style={{ width: 32, height: 2, borderRadius: 2, background: C.grad }} />
+        <p style={{
+          fontFamily: FONT,
+          fontSize: isMobile ? 12 : 13,
+          color: C.inkDim,
+          lineHeight: 1.7,
+          margin: 0,
+          maxWidth: 560,
+        }}>
+          "I started Nexfluence to solve a problem I lived every day —
+          the disconnect between brands and authentic Baltic creators.
+          Real people, real stories, real results."
+        </p>
+      </div>
+    </div>
+  );
+}
 
 function TeamCard({ member }: { member: TeamMember }) {
   const [hovered, setHovered] = useState(false);
@@ -640,7 +703,7 @@ function TeamCard({ member }: { member: TeamMember }) {
         <a href={member.linkedin} target="_blank" rel="noreferrer" style={{
           fontSize: 12, color: C.violet, textDecoration: "none",
           fontWeight: 600, fontFamily: FONT,
-        }}>LinkedIn →</a>
+        }}>LinkedIn </a>
       )}
     </div>
   );
@@ -663,6 +726,11 @@ function Team() {
           The People Behind{" "}<GradientText>the Platform</GradientText>
         </h2>
       </div>
+
+      {/* Founder compact card — full width above team grid */}
+      <FounderCard />
+
+      {/* Team grid */}
       <div style={{
         display: "grid",
         gridTemplateColumns: isMobile
@@ -682,12 +750,12 @@ function Team() {
 // 5. EVENTS & COMMUNITY
 // ─────────────────────────────────────────────
 const EVENT_PHOTOS = [
-  { src: "/events/influencer1.webp", alt: "Influencer meetup in Riga",      span: false },
-  { src: "/events/influencer2.webp", alt: "Brands & creators networking",   span: false },
-  { src: "/events/influencer3.webp", alt: "Nexfluence Connect 2025 stage",  span: true  },
-  { src: "/events/influencer4.webp", alt: "Creator masterclass",            span: false },
-  { src: "/events/influencer5.webp", alt: "Pop‑up brand activation",        span: false },
-  { src: "/events/influencer6.webp", alt: "After‑party celebration",        span: false },
+  { src: "/images/Last Event.webp", alt: "Influencer meetup in Riga",      span: false },
+  { src: "/images/Header.webp", alt: "Brands & creators networking",   span: false },
+  { src: "/images/Lecture.webp", alt: "Creator Nexus 2026 Stage",  span: true  },
+  { src: "/images/Talking.webp", alt: "Creator masterclass",            span: false },
+  { src: "/images/Ice Cream.webp", alt: "Pop‑up brand activation",        span: false },
+  // { src: "/events/influencer6.webp", alt: "After‑party celebration",        span: false },
 ];
 
 function Events() {
@@ -709,7 +777,6 @@ function Events() {
         </h2>
       </div>
 
-      {/* Mobile / tablet: simple uniform grid, no spanning */}
       {(isMobile || isTablet) ? (
         <div style={{
           display: "grid",
@@ -736,7 +803,6 @@ function Events() {
           ))}
         </div>
       ) : (
-        /* Desktop: bento-style with one wide span */
         <div style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
@@ -769,7 +835,8 @@ function Events() {
 }
 
 // ─────────────────────────────────────────────
-// 6. SPONSORS MARQUEE
+// 6. SPONSORS MARQUEE — full-bleed, edge-to-edge
+// Animation injected via GLOBAL_CSS <style> tag
 // ─────────────────────────────────────────────
 const SPONSORS = [
   { name: "Artisan Street Bakery", img: "/Artisan Street Bakery.webp" },
@@ -784,6 +851,14 @@ const SPONSORS = [
 function SponsorsMarquee() {
   const w        = useWindowWidth();
   const isMobile = w < 640;
+  const isTablet = w >= 640 && w < 900;
+
+  const imgH   = isMobile ? 78  : isTablet ? 108 : 140;
+  const radius = isMobile ? 8   : 14;
+  const margin = isMobile ? "0 8px" : isTablet ? "0 11px" : "0 15px";
+  const trackH = isMobile ? 110 : isTablet ? 140 : 180;
+
+  const items = [...SPONSORS, ...SPONSORS];
 
   return (
     <section style={{ marginTop: 96 }}>
@@ -794,46 +869,66 @@ function SponsorsMarquee() {
       }}>
         Trusted Partners & Event Sponsors
       </p>
+
       <div style={{
-        position: "relative", overflow: "hidden",
-        height: isMobile ? 80 : 120,
-        borderTop: "1px solid rgba(124,85,255,0.10)",
-        borderBottom: "1px solid rgba(124,85,255,0.10)",
-        background: C.bgSub,
+        position: "relative",
+        overflow: "hidden",
+        height: trackH,
+        borderTop:    "1px solid rgba(124,85,255,0.22)",
+        borderBottom: "1px solid rgba(124,85,255,0.22)",
+        background:   "rgba(124,85,255,0.03)",
       }}>
+        {/* Ambient glow */}
         <div style={{
           position: "absolute", inset: 0,
-          background: `linear-gradient(90deg, ${C.bg} 0%, transparent 12%, transparent 88%, ${C.bg} 100%)`,
+          background: "radial-gradient(ellipse at 50% 50%, rgba(124,85,255,0.18) 0%, rgba(255,51,188,0.10) 35%, transparent 65%)",
+          filter: "blur(22px)",
+          pointerEvents: "none", zIndex: 1,
+        }} />
+
+        {/* Edge fade */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: `linear-gradient(90deg, ${C.bg} 0%, transparent 6%, transparent 94%, ${C.bg} 100%)`,
           pointerEvents: "none", zIndex: 2,
         }} />
-        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
-          <div className="marquee-track" style={{ alignItems: "center" }}>
-            {[...SPONSORS, ...SPONSORS].map((s, i) => (
-              <div key={`${s.name}-${i}`} style={{
+
+        {/* Scrolling tape — animated via .marquee-track class in GLOBAL_CSS */}
+        <div className="marquee-track">
+          {items.map((s, i) => (
+            <div
+              key={`${s.name}-${i}`}
+              style={{
                 flexShrink: 0,
-                margin: isMobile ? "0 18px" : "0 28px",
-                display: "flex", alignItems: "center",
-                height: isMobile ? 48 : 72,
-              }}>
-                <Image
-                  src={s.img} alt={s.name}
-                  width={isMobile ? 80 : 120} height={isMobile ? 48 : 72}
-                  style={{
-                    objectFit: "contain", opacity: 0.45, filter: "grayscale(1)",
-                    transition: "opacity 0.2s, filter 0.2s, transform 0.2s",
-                  }}
-                  onMouseEnter={(e) => {
-                    const el = e.currentTarget as HTMLImageElement;
-                    el.style.opacity = "1"; el.style.filter = "none"; el.style.transform = "scale(1.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    const el = e.currentTarget as HTMLImageElement;
-                    el.style.opacity = "0.45"; el.style.filter = "grayscale(1)"; el.style.transform = "scale(1)";
-                  }}
-                />
-              </div>
-            ))}
-          </div>
+                margin: margin,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: imgH,
+              }}
+            >
+              <img
+                src={s.img}
+                alt={s.name}
+                style={{
+                  height: "100%",
+                  width: "auto",
+                  objectFit: "cover",
+                  borderRadius: radius,
+                  opacity: 0.96,
+                  filter: "drop-shadow(0 0 18px rgba(124,85,255,0.18)) drop-shadow(0 0 28px rgba(255,51,188,0.12))",
+                  transition: "transform 0.25s ease",
+                  display: "block",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.transform = "scale(1.04)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.transform = "scale(1)";
+                }}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -884,8 +979,8 @@ function FinalCTA() {
             Whether you're a brand, creator, or potential partner — we'd love to hear from you.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <Btn href="mailto:brands@nexfluence.eu" variant="primary">I'm a Brand →</Btn>
-            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">I'm a Creator →</Btn>
+            <Btn href="mailto:brands@nexfluence.eu" variant="primary">I'm a Brand</Btn>
+            <Btn href="mailto:creators@nexfluence.eu" variant="ghost">I'm a Creator</Btn>
           </div>
           <p style={{
             fontSize: 12, color: "rgba(10,6,18,0.3)",
@@ -926,7 +1021,6 @@ function Footer() {
         gap: isMobile ? "32px 20px" : 36,
         marginBottom: 48,
       }}>
-        {/* Brand column */}
         <div style={{ gridColumn: isMobile ? "1 / -1" : "auto" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
             <Image src="/Nex.webp" alt="Nexfluence" width={38} height={38} style={{ borderRadius: 9 }} />
@@ -956,7 +1050,6 @@ function Footer() {
           </div>
         </div>
 
-        {/* Link columns */}
         {Object.entries(FOOTER_LINKS).map(([col, links]) => (
           <div key={col}>
             <p style={{
@@ -1006,8 +1099,10 @@ function Footer() {
 export default function AboutPage() {
   return (
     <div style={{ background: C.bg, overflowX: "hidden", fontFamily: FONT }}>
+      {/* Inject marquee keyframes — this is what makes the strip actually move */}
+      <style>{GLOBAL_CSS}</style>
       <Header />
-      <FounderHero />
+      <HeroBanner />
       <OurStory />
       <Team />
       <Events />
@@ -1020,28 +1115,11 @@ export default function AboutPage() {
 
 /*
  * ═══════════════════════════════════════════════════════════════════
- * GLOBALS.CSS — add once, shared across all pages
- * ═══════════════════════════════════════════════════════════════════
- *
- * @import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700;800;900&display=swap');
- *
- * @layer utilities {
- *   .marquee-track {
- *     display: flex; width: max-content;
- *     animation: marquee-left 28s linear infinite;
- *   }
- *   .marquee-track:hover { animation-play-state: paused; }
- * }
- * @keyframes marquee-left {
- *   from { transform: translateX(0); }
- *   to   { transform: translateX(-50%); }
- * }
- * ═══════════════════════════════════════════════════════════════════
- *
- * IMAGE PLACEHOLDERS — replace with your own files
- * ─────────────────────────────────────────────────
- *  /founder.webp              → high-res founder portrait
- *  /team/member1.webp         → team member photos (×6)
- *  /events/influencer1.webp   → event photos (×6)
+ * IMAGE FILES NEEDED
+ * ─────────────────────────────────────────────────────────────────
+ *  /Lecture.webp              the wide banner photo (uploaded)
+ *  /founder.webp              founder portrait for compact card
+ *  /team/member1–6.webp       team member photos
+ *  /events/influencer1–6.webp event gallery photos
  * ═══════════════════════════════════════════════════════════════════
  */

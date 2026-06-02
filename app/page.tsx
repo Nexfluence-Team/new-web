@@ -3,17 +3,45 @@
 /**
  * app/zone/page.tsx
  * Creator Nexus by Nexfluence — Company Homepage v4
- *
- * FIXES v4:
- *  - Hero constrained to same maxWidth + padding as nav (1200px / 48px sides)
- *  - Hero right-side visual cluster locked as a single grouped unit
- *  - GradientText renders ONLY the text gradient — no background box
- *  - White theme throughout
- *  - Bento grids for Services + Why Nexfluence
  */
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+
+// ─────────────────────────────────────────────
+// INLINE CSS — keyframes injected via <style> tag
+// so the marquee actually animates (not just commented in globals.css)
+// ─────────────────────────────────────────────
+const GLOBAL_CSS = `
+  @keyframes marquee-left {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-left 28s linear infinite;
+    will-change: transform;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    z-index: 3;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+  @keyframes dot-pulse {
+    0%   { box-shadow: 0 0 0 0   rgba(255,51,188,0.5); }
+    70%  { box-shadow: 0 0 0 9px rgba(255,51,188,0);   }
+    100% { box-shadow: 0 0 0 0   rgba(255,51,188,0);   }
+  }
+  .dot-live {
+    display: inline-block;
+    width: 7px; height: 7px; border-radius: 9999px;
+    background: #ff33bc;
+    box-shadow: 0 0 0 0 rgba(255,51,188,0.5);
+    animation: dot-pulse 1.8s ease-out infinite;
+    flex-shrink: 0;
+  }
+`;
 
 // ─────────────────────────────────────────────
 // RESPONSIVE HOOK
@@ -78,7 +106,6 @@ type CSSProps = React.CSSProperties;
 
 // ─────────────────────────────────────────────
 // ICON HELPER
-// Renders an SVG from /public/icons/
 // ─────────────────────────────────────────────
 function Icon({ name, size = 22, style }: { name: string; size?: number; style?: CSSProps }) {
   return (
@@ -163,7 +190,7 @@ function Btn({ href, onClick, variant, children, style }: BtnProps) {
 // ─────────────────────────────────────────────
 const NAV_LINKS = [
   { label: "Marketplace", href: "/marketplace" },
-  { label: "Creators",    href: "/creators"    },
+  // { label: "Creators",    href: "/creators"    },
   { label: "About Us",    href: "/about"       },
   { label: "Growth",      href: "/progress"    },
 ];
@@ -259,7 +286,6 @@ function Hero() {
   const w        = useWindowWidth();
   const isMobile = w < 640;
   const isTablet = w >= 640 && w < 900;
-
   const hPad = isMobile ? 20 : w < 900 ? 32 : 48;
 
   return (
@@ -268,7 +294,6 @@ function Hero() {
       display: "flex", flexDirection: "column",
       justifyContent: "center", overflow: "hidden", background: C.bg,
     }}>
-      {/* Background */}
       <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none" }}>
         <div style={{
           position: "absolute", inset: 0,
@@ -286,24 +311,17 @@ function Hero() {
         }} />
       </div>
 
-      {/* Content */}
       <div style={{
-        maxWidth: SITE_MAX_W,
-        width: "100%",
-        margin: "0 auto",
+        maxWidth: SITE_MAX_W, width: "100%", margin: "0 auto",
         paddingTop: isMobile ? 120 : 130,
         paddingBottom: isMobile ? 40 : isTablet ? 40 : 100,
-        paddingLeft: hPad,
-        paddingRight: hPad,
+        paddingLeft: hPad, paddingRight: hPad,
         boxSizing: "border-box",
         display: "grid",
         gridTemplateColumns: !isMobile && !isTablet ? "1fr 1fr" : "1fr",
-        gap: 48,
-        alignItems: "center",
-        position: "relative",
-        zIndex: 1,
+        gap: 48, alignItems: "center",
+        position: "relative", zIndex: 1,
       }}>
-        {/* Left — copy */}
         <div>
           <div style={{
             display: "inline-flex", alignItems: "center", gap: 10,
@@ -361,11 +379,9 @@ function Hero() {
           </div>
         </div>
 
-        {/* Right — visual cluster (desktop only) */}
         {!isMobile && !isTablet && <HeroVisual />}
       </div>
 
-      {/* Tablet: visual below copy */}
       {isTablet && (
         <div style={{
           maxWidth: SITE_MAX_W, width: "100%", margin: "0 auto",
@@ -378,7 +394,6 @@ function Hero() {
         </div>
       )}
 
-      {/* Mobile: simplified visual */}
       {isMobile && (
         <div style={{
           width: "100%", paddingLeft: 20, paddingRight: 20,
@@ -394,11 +409,8 @@ function Hero() {
 function HeroVisual() {
   return (
     <div style={{ position: "relative", width: "100%", height: 460 }}>
-
-      {/* Main photo */}
       <div style={{
-        position: "absolute",
-        top: 24, right: 0,
+        position: "absolute", top: 24, right: 0,
         width: "72%", height: 340,
         borderRadius: 20, overflow: "hidden",
         border: "1px solid rgba(255,51,188,0.2)",
@@ -409,7 +421,6 @@ function HeroVisual() {
           position: "absolute", inset: 0,
           background: "linear-gradient(135deg, rgba(124,85,255,0.25) 0%, rgba(255,51,188,0.12) 50%, transparent 70%)",
         }} />
-        {/* Location badge */}
         <div style={{
           position: "absolute", top: 14, left: 14,
           padding: "5px 11px", borderRadius: 8,
@@ -423,7 +434,6 @@ function HeroVisual() {
         </div>
       </div>
 
-      {/* Creator card — bottom left */}
       <div style={{
         position: "absolute", bottom: 16, left: 0,
         width: 188, borderRadius: 16, overflow: "hidden",
@@ -448,7 +458,6 @@ function HeroVisual() {
         </div>
       </div>
 
-      {/* ROI stat — top left */}
       <div style={{
         position: "absolute", top: 0, left: 24,
         padding: "11px 15px", borderRadius: 12,
@@ -462,7 +471,6 @@ function HeroVisual() {
         <p style={{ fontSize: 11, color: C.inkDim, marginTop: 3, margin: 0 }}>avg. campaign ROI</p>
       </div>
 
-      {/* Live badge */}
       <div style={{
         position: "absolute", bottom: 120, right: 12,
         display: "flex", alignItems: "center", gap: 7,
@@ -657,9 +665,7 @@ function SvcDiscovery({ style }: { style?: CSSProps }) {
     <BentoCard accent={C.violet} style={{ minHeight: 240, ...style }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 14 }}>
         <div style={{ flex: 1, minWidth: 180 }}>
-          <IconBox color={C.violet}>
-            <Icon name="search" size={22} />
-          </IconBox>
+          <IconBox color={C.violet}><Icon name="search" size={22} /></IconBox>
           <h3 style={{ fontSize: 19, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "14px 0 10px" }}>Creator Discovery</h3>
           <p style={{ fontSize: 14, color: C.inkDim, lineHeight: 1.75, maxWidth: 380, margin: 0 }}>
             We identify the right creators from our verified network of 500+ Baltic influencers — matched by niche, audience demographics, engagement quality, and brand fit.
@@ -684,9 +690,7 @@ function SvcCampaign({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.pink} style={{ minHeight: 240, ...style }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-        <IconBox color={C.pink}>
-          <Icon name="rocket" size={22} />
-        </IconBox>
+        <IconBox color={C.pink}><Icon name="rocket" size={22} /></IconBox>
         <div>
           <h3 style={{ fontSize: 19, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 10px" }}>Campaign Management</h3>
           <p style={{ fontSize: 14, color: C.inkDim, lineHeight: 1.75, margin: 0 }}>
@@ -718,9 +722,7 @@ function SvcCampaign({ style }: { style?: CSSProps }) {
 function SvcAnalytics({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.indigo} style={style}>
-      <IconBox color={C.indigo}>
-        <Icon name="analytics" size={22} />
-      </IconBox>
+      <IconBox color={C.indigo}><Icon name="analytics" size={22} /></IconBox>
       <h3 style={{ fontSize: 17, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: 0 }}>Performance Analytics</h3>
       <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.75, margin: 0 }}>
         Every campaign tracked with real data — impressions, clicks, conversions, and revenue. You pay only for confirmed results.
@@ -741,9 +743,7 @@ function SvcAnalytics({ style }: { style?: CSSProps }) {
 function SvcAffiliate({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.violet} style={style}>
-      <IconBox color={C.violet}>
-        <Icon name="Collab" size={22} />
-      </IconBox>
+      <IconBox color={C.violet}><Icon name="Collab" size={22} /></IconBox>
       <h3 style={{ fontSize: 17, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: 0 }}>Affiliate Programs</h3>
       <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.75, margin: 0 }}>
         Long-term affiliate relationships with your best creators. Promo codes, tracked links, and tiered commissions — all on one platform.
@@ -760,8 +760,7 @@ function SvcHighlight({ style }: { style?: CSSProps }) {
     <div style={{
       borderRadius: 24, padding: 28,
       background: `linear-gradient(135deg, ${C.violet}12, ${C.pink}08)`,
-      border: `1px solid ${C.violet}20`,
-      boxShadow: C.shadowMd,
+      border: `1px solid ${C.violet}20`, boxShadow: C.shadowMd,
       display: "flex", flexDirection: "column", alignItems: "center",
       justifyContent: "center", textAlign: "center", gap: 16,
       ...style,
@@ -779,7 +778,7 @@ function SvcHighlight({ style }: { style?: CSSProps }) {
         </p>
       </div>
       <Btn href="#contact" variant="primary" style={{ padding: "10px 20px", fontSize: 13, width: "100%" }}>
-        Get Started 
+        Get Started
       </Btn>
     </div>
   );
@@ -888,10 +887,10 @@ function HowItWorks() {
 interface CreatorProfile { name: string; handle: string; niche: string; photo: string; followers: string; platforms: string[]; location: string; }
 
 const CREATORS: CreatorProfile[] = [
-  { name: "Cindy Bokāne",    handle: "@cindywanderlust", niche: "Travel & Lifestyle",    photo: "/images/Cindy.webp", followers: "84K", platforms: ["IG","YT"], location: "Riga, LV" },
-  { name: "Armands Simsons", handle: "@armandssimsons", niche: "Business & Startups",   photo: "/images/Armandez.webp", followers: "61K", platforms: ["IG","LI"], location: "Riga, LV" },
-  { name: "Event Creator",   handle: "@nexcreator",     niche: "Food & Hospitality",    photo: "/images/Seraphena.webp",      followers: "32K", platforms: ["IG","TT"], location: "Tallinn, EE" },
-  { name: "Space Creator",   handle: "@spacecreator",   niche: "Design & Architecture", photo: "/images/Aleksejs.webp",     followers: "47K", platforms: ["IG"],      location: "Vilnius, LT" },
+  { name: "Cindy Bokāne",    handle: "@cindywanderlust", niche: "Travel & Lifestyle",    photo: "/images/Cindy.webp",     followers: "84K", platforms: ["IG","YT"], location: "Riga, LV"    },
+  { name: "Armands Simsons", handle: "@armandssimsons", niche: "Business & Startups",   photo: "/images/Armandez.webp",  followers: "61K", platforms: ["IG","LI"], location: "Riga, LV"    },
+  { name: "Event Creator",   handle: "@nexcreator",     niche: "Food & Hospitality",    photo: "/images/Seraphena.webp", followers: "32K", platforms: ["IG","TT"], location: "Tallinn, EE" },
+  { name: "Space Creator",   handle: "@spacecreator",   niche: "Design & Architecture", photo: "/images/Aleksejs.webp",  followers: "47K", platforms: ["IG"],      location: "Vilnius, LT" },
 ];
 
 const PCOLS: Record<string, string> = { IG: "#ff33bc", TT: "#7c55ff", YT: "#e03030", LI: "#6a66ff" };
@@ -1000,7 +999,8 @@ function FeaturedCreators() {
 }
 
 // ─────────────────────────────────────────────
-// 7. PARTNERS MARQUEE
+// 7. PARTNERS MARQUEE — full-bleed, edge-to-edge
+// Colored logos, glow, animated via GLOBAL_CSS <style> tag
 // ─────────────────────────────────────────────
 const BRANDS = [
   { name: "Artisan Street Bakery", img: "/Artisan Street Bakery.webp" },
@@ -1013,47 +1013,87 @@ const BRANDS = [
 ];
 
 function PartnersMarquee() {
-  const w = useWindowWidth();
+  const w        = useWindowWidth();
   const isMobile = w < 640;
+  const isTablet = w >= 640 && w < 900;
+
+  const imgH   = isMobile ? 78  : isTablet ? 108 : 140;
+  const radius = isMobile ? 8   : 14;
+  const margin = isMobile ? "0 8px" : isTablet ? "0 11px" : "0 15px";
+  const trackH = isMobile ? 110 : isTablet ? 140 : 180;
+
+  const items = [...BRANDS, ...BRANDS];
+
   return (
     <section style={{ marginTop: 96 }}>
       <p style={{
         textAlign: "center", fontSize: 12, fontWeight: 500,
         letterSpacing: "0.18em", textTransform: "uppercase",
         color: "rgba(10,6,18,0.28)", marginBottom: 28,
-      }}>Trusted by Baltic Brands</p>
-      <div style={{
-        position: "relative", overflow: "hidden",
-        height: isMobile ? 80 : 120,
-        borderTop: "1px solid rgba(124,85,255,0.10)",
-        borderBottom: "1px solid rgba(124,85,255,0.10)",
-        background: C.bgSub,
       }}>
+        Trusted by Baltic Brands
+      </p>
+
+      {/* Full-bleed strip — no side padding, no side borders */}
+      <div style={{
+        position: "relative",
+        overflow: "hidden",
+        height: trackH,
+        borderTop:    "1px solid rgba(124,85,255,0.22)",
+        borderBottom: "1px solid rgba(124,85,255,0.22)",
+        background:   "rgba(124,85,255,0.03)",
+      }}>
+        {/* Ambient glow */}
         <div style={{
           position: "absolute", inset: 0,
-          background: `linear-gradient(90deg, ${C.bg} 0%, transparent 12%, transparent 88%, ${C.bg} 100%)`,
+          background: "radial-gradient(ellipse at 50% 50%, rgba(124,85,255,0.18) 0%, rgba(255,51,188,0.10) 35%, transparent 65%)",
+          filter: "blur(22px)",
+          pointerEvents: "none", zIndex: 1,
+        }} />
+
+        {/* Edge fade */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: `linear-gradient(90deg, ${C.bg} 0%, transparent 6%, transparent 94%, ${C.bg} 100%)`,
           pointerEvents: "none", zIndex: 2,
         }} />
-        <div style={{ display: "flex", alignItems: "center", height: "100%" }}>
-          <div className="marquee-track" style={{ alignItems: "center" }}>
-            {[...BRANDS, ...BRANDS].map((b, i) => (
-              <div key={`${b.name}-${i}`} style={{
-                flexShrink: 0, margin: isMobile ? "0 18px" : "0 28px",
-                display: "flex", alignItems: "center", height: isMobile ? 48 : 72,
-              }}>
-                <Image
-                  src={b.img} alt={b.name}
-                  width={isMobile ? 80 : 120} height={isMobile ? 48 : 72}
-                  style={{
-                    objectFit: "contain", opacity: 0.45, filter: "grayscale(1)",
-                    transition: "opacity 0.2s, filter 0.2s, transform 0.2s",
-                  }}
-                  onMouseEnter={(e) => { const el = e.currentTarget as HTMLImageElement; el.style.opacity = "1"; el.style.filter = "none"; el.style.transform = "scale(1.05)"; }}
-                  onMouseLeave={(e) => { const el = e.currentTarget as HTMLImageElement; el.style.opacity = "0.45"; el.style.filter = "grayscale(1)"; el.style.transform = "scale(1)"; }}
-                />
-              </div>
-            ))}
-          </div>
+
+        {/* Scrolling tape — animated via .marquee-track in GLOBAL_CSS */}
+        <div className="marquee-track">
+          {items.map((b, i) => (
+            <div
+              key={`${b.name}-${i}`}
+              style={{
+                flexShrink: 0,
+                margin: margin,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                height: imgH,
+              }}
+            >
+              <img
+                src={b.img}
+                alt={b.name}
+                style={{
+                  height: "100%",
+                  width: "auto",
+                  objectFit: "cover",
+                  borderRadius: radius,
+                  opacity: 0.96,
+                  filter: "drop-shadow(0 0 18px rgba(124,85,255,0.18)) drop-shadow(0 0 28px rgba(255,51,188,0.12))",
+                  transition: "transform 0.25s ease",
+                  display: "block",
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.transform = "scale(1.04)";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLImageElement).style.transform = "scale(1)";
+                }}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -1110,9 +1150,7 @@ function WhyNexfluence() {
 function WhyPerformance({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.violet} style={style}>
-      <IconBox color={C.violet}>
-        <Icon name="spark" size={22} />
-      </IconBox>
+      <IconBox color={C.violet}><Icon name="spark" size={22} /></IconBox>
       <h3 style={{ fontSize: 19, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: 0 }}>Pay Only for Results</h3>
       <p style={{ fontSize: 14, color: C.inkDim, lineHeight: 1.75, margin: 0 }}>
         Our performance-based pricing model means you're never paying for vanity metrics. Every spend is tied to a real business outcome — sales, sign-ups, or agreed KPIs.
@@ -1131,9 +1169,7 @@ function WhyBaltic({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.pink} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-        <IconBox color={C.pink}>
-          <Icon name="globe" size={22} />
-        </IconBox>
+        <IconBox color={C.pink}><Icon name="globe" size={22} /></IconBox>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 8px" }}>Baltic-Native Expertise</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.7, margin: 0 }}>
@@ -1154,9 +1190,7 @@ function WhyQuality({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.indigo} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-        <IconBox color={C.indigo}>
-          <Icon name="quality" size={22} />
-        </IconBox>
+        <IconBox color={C.indigo}><Icon name="quality" size={22} /></IconBox>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 8px" }}>Audience Quality Over Quantity</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.7, margin: 0 }}>
@@ -1178,9 +1212,7 @@ function WhyTransparency({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.violet} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-        <IconBox color={C.violet}>
-          <Icon name="link" size={22} />
-        </IconBox>
+        <IconBox color={C.violet}><Icon name="link" size={22} /></IconBox>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 8px" }}>One Platform, Full Transparency</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.7, margin: 0 }}>
@@ -1196,9 +1228,7 @@ function WhyLongTerm({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.pink} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-        <IconBox color={C.pink}>
-          <Icon name="cycle" size={22} />
-        </IconBox>
+        <IconBox color={C.pink}><Icon name="cycle" size={22} /></IconBox>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 8px" }}>Built for Long-Term Value</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.7, margin: 0 }}>
@@ -1214,9 +1244,7 @@ function WhyDataDriven({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.violet} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 18, flexWrap: "wrap" }}>
-        <IconBox color={C.violet}>
-          <Icon name="targeted" size={22} />
-        </IconBox>
+        <IconBox color={C.violet}><Icon name="targeted" size={22} /></IconBox>
         <div style={{ flex: 1, minWidth: 180 }}>
           <h3 style={{ fontSize: 17, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 9px" }}>Data-Driven Matching</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.75, margin: 0, maxWidth: 380 }}>
@@ -1250,7 +1278,7 @@ function WhyTestimonial({ style }: { style?: CSSProps }) {
       ...style,
     }}>
       <p style={{ fontSize: 56, lineHeight: 0.8, fontWeight: 900, background: C.grad, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text", margin: 0 }}>"</p>
-      <p style={{ fontSize: 16, color: C.inkDim2, lineHeight: 1.8,  margin: 0 }}>
+      <p style={{ fontSize: 16, color: C.inkDim2, lineHeight: 1.8, margin: 0 }}>
         Working with Nexfluence was the first time we actually knew where every euro of our influencer budget went — and it came back 3× over.
       </p>
       <div style={{ display: "flex", alignItems: "center", gap: 11 }}>
@@ -1396,6 +1424,8 @@ function Footer() {
 export default function ZonePage() {
   return (
     <div style={{ background: C.bg, overflowX: "hidden" }}>
+      {/* Inject marquee + dot-live keyframes — this is what makes them actually animate */}
+      <style>{GLOBAL_CSS}</style>
       <Header />
       <Hero />
       <StatsBar />
@@ -1409,35 +1439,3 @@ export default function ZonePage() {
     </div>
   );
 }
-
-/*
- * ═══════════════════════════════════════════════════════════════════
- * MERGE INTO app/globals.css
- * ═══════════════════════════════════════════════════════════════════
- *
- * @layer utilities {
- *   .dot-live {
- *     display: inline-block;
- *     width: 7px; height: 7px; border-radius: 9999px;
- *     background: #ff33bc;
- *     box-shadow: 0 0 0 0 rgba(255,51,188,0.5);
- *     animation: dot-pulse 1.8s ease-out infinite;
- *     flex-shrink: 0;
- *   }
- *   .marquee-track {
- *     display: flex; width: max-content;
- *     animation: marquee-left 28s linear infinite;
- *   }
- *   .marquee-track:hover { animation-play-state: paused; }
- * }
- * @keyframes dot-pulse {
- *   0%   { box-shadow: 0 0 0 0   rgba(255,51,188,0.5); }
- *   70%  { box-shadow: 0 0 0 9px rgba(255,51,188,0);   }
- *   100% { box-shadow: 0 0 0 0   rgba(255,51,188,0);   }
- * }
- * @keyframes marquee-left {
- *   from { transform: translateX(0); }
- *   to   { transform: translateX(-50%); }
- * }
- * ═══════════════════════════════════════════════════════════════════
- */
