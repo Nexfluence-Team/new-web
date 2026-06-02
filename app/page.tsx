@@ -57,8 +57,6 @@ const C = {
 
 // ─────────────────────────────────────────────
 // LAYOUT CONSTANTS
-// Site-wide max-width and horizontal padding.
-// Hero uses these SAME values — no wider.
 // ─────────────────────────────────────────────
 const SITE_MAX_W = 1200;
 
@@ -79,6 +77,22 @@ function siteOuter(w: number, mt = 96): React.CSSProperties {
 type CSSProps = React.CSSProperties;
 
 // ─────────────────────────────────────────────
+// ICON HELPER
+// Renders an SVG from /public/icons/
+// ─────────────────────────────────────────────
+function Icon({ name, size = 22, style }: { name: string; size?: number; style?: CSSProps }) {
+  return (
+    <img
+      src={`/icons/${name}.svg`}
+      width={size}
+      height={size}
+      alt=""
+      style={{ display: "block", flexShrink: 0, ...style }}
+    />
+  );
+}
+
+// ─────────────────────────────────────────────
 // ATOMS
 // ─────────────────────────────────────────────
 function PillLabel({ children }: { children: React.ReactNode }) {
@@ -94,9 +108,6 @@ function PillLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-// GradientText — pure text gradient, ZERO background fill.
-// The WebkitTextFillColor + WebkitBackgroundClip approach only colours
-// the text glyphs; no box or highlight is ever painted.
 function GradientText({ children, style }: { children: React.ReactNode; style?: CSSProps }) {
   return (
     <span style={{
@@ -149,14 +160,12 @@ function Btn({ href, onClick, variant, children, style }: BtnProps) {
 
 // ─────────────────────────────────────────────
 // 1. HEADER
-// Sets the canonical width: maxWidth 1200px, padding 48px each side.
-// Every other section matches this exactly.
 // ─────────────────────────────────────────────
 const NAV_LINKS = [
   { label: "Marketplace", href: "/marketplace" },
   { label: "Creators",    href: "/creators"    },
   { label: "About Us",    href: "/about"       },
-  { label: "Growth",      href: "/progress"      },
+  { label: "Growth",      href: "/progress"    },
 ];
 
 function Header() {
@@ -180,7 +189,6 @@ function Header() {
       borderBottom: scrolled ? "1px solid rgba(124,85,255,0.12)" : "1px solid transparent",
       boxShadow: scrolled ? "0 2px 20px rgba(124,85,255,0.08)" : "none",
     }}>
-      {/* Inner — THIS is the canonical width reference */}
       <div style={{
         maxWidth: SITE_MAX_W,
         margin: "0 auto",
@@ -246,16 +254,12 @@ function Header() {
 
 // ─────────────────────────────────────────────
 // 2. HERO
-// Uses the exact same maxWidth + padding as the header.
-// Right-side visual is a single self-contained component
-// with its own relative container — never breaks out.
 // ─────────────────────────────────────────────
 function Hero() {
   const w        = useWindowWidth();
   const isMobile = w < 640;
   const isTablet = w >= 640 && w < 900;
 
-  // Horizontal padding matches header exactly
   const hPad = isMobile ? 20 : w < 900 ? 32 : 48;
 
   return (
@@ -282,7 +286,7 @@ function Hero() {
         }} />
       </div>
 
-      {/* Content — constrained to SITE_MAX_W, same padding as header */}
+      {/* Content */}
       <div style={{
         maxWidth: SITE_MAX_W,
         width: "100%",
@@ -357,11 +361,11 @@ function Hero() {
           </div>
         </div>
 
-        {/* Right — visual cluster (desktop only in grid, tablet below) */}
+        {/* Right — visual cluster (desktop only) */}
         {!isMobile && !isTablet && <HeroVisual />}
       </div>
 
-      {/* Tablet: visual below the copy block, still within site width */}
+      {/* Tablet: visual below copy */}
       {isTablet && (
         <div style={{
           maxWidth: SITE_MAX_W, width: "100%", margin: "0 auto",
@@ -387,14 +391,11 @@ function Hero() {
   );
 }
 
-// The entire right-side cluster lives in a SINGLE relative-positioned div.
-// All floating cards use absolute positioning within that div only.
-// Nothing escapes the container.
 function HeroVisual() {
   return (
     <div style={{ position: "relative", width: "100%", height: 460 }}>
 
-      {/* Main photo — takes the right 72% */}
+      {/* Main photo */}
       <div style={{
         position: "absolute",
         top: 24, right: 0,
@@ -415,8 +416,10 @@ function HeroVisual() {
           background: "rgba(255,255,255,0.92)", backdropFilter: "blur(8px)",
           border: "1px solid rgba(124,85,255,0.14)",
           boxShadow: "0 2px 10px rgba(124,85,255,0.10)",
+          display: "flex", alignItems: "center", gap: 6,
         }}>
-          <p style={{ fontSize: 11, color: C.ink, fontWeight: 600, margin: 0 }}>📍 Riga, Latvia</p>
+          <Icon name="location" size={12} />
+          <p style={{ fontSize: 11, color: C.ink, fontWeight: 600, margin: 0 }}>Riga, Latvia</p>
         </div>
       </div>
 
@@ -445,7 +448,7 @@ function HeroVisual() {
         </div>
       </div>
 
-      {/* ROI stat — top left, above the creator card */}
+      {/* ROI stat — top left */}
       <div style={{
         position: "absolute", top: 0, left: 24,
         padding: "11px 15px", borderRadius: 12,
@@ -603,7 +606,7 @@ function IconBox({ color, children }: { color: string; children: React.ReactNode
       width: 50, height: 50, borderRadius: 14,
       background: `${color}12`, border: `1px solid ${color}24`,
       display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: 22, flexShrink: 0,
+      flexShrink: 0,
     }}>{children}</div>
   );
 }
@@ -654,7 +657,9 @@ function SvcDiscovery({ style }: { style?: CSSProps }) {
     <BentoCard accent={C.violet} style={{ minHeight: 240, ...style }}>
       <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 14 }}>
         <div style={{ flex: 1, minWidth: 180 }}>
-          <IconBox color={C.violet}>🔍</IconBox>
+          <IconBox color={C.violet}>
+            <Icon name="search" size={22} />
+          </IconBox>
           <h3 style={{ fontSize: 19, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "14px 0 10px" }}>Creator Discovery</h3>
           <p style={{ fontSize: 14, color: C.inkDim, lineHeight: 1.75, maxWidth: 380, margin: 0 }}>
             We identify the right creators from our verified network of 500+ Baltic influencers — matched by niche, audience demographics, engagement quality, and brand fit.
@@ -663,8 +668,10 @@ function SvcDiscovery({ style }: { style?: CSSProps }) {
         <div style={{
           width: 100, height: 100, borderRadius: 18, flexShrink: 0,
           background: `linear-gradient(135deg, ${C.violet}16, ${C.pink}0a)`,
-          border: C.border, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 36,
-        }}>🌐</div>
+          border: C.border, display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          <Icon name="globe" size={36} />
+        </div>
       </div>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 7 }}>
         {["Niche Matching", "Audience Audit", "Engagement Rate", "Brand Safety"].map((t) => <STag key={t} label={t} color={C.violet} />)}
@@ -677,7 +684,9 @@ function SvcCampaign({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.pink} style={{ minHeight: 240, ...style }}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 14 }}>
-        <IconBox color={C.pink}>🚀</IconBox>
+        <IconBox color={C.pink}>
+          <Icon name="rocket" size={22} />
+        </IconBox>
         <div>
           <h3 style={{ fontSize: 19, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 10px" }}>Campaign Management</h3>
           <p style={{ fontSize: 14, color: C.inkDim, lineHeight: 1.75, margin: 0 }}>
@@ -709,7 +718,9 @@ function SvcCampaign({ style }: { style?: CSSProps }) {
 function SvcAnalytics({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.indigo} style={style}>
-      <IconBox color={C.indigo}>📊</IconBox>
+      <IconBox color={C.indigo}>
+        <Icon name="analytics" size={22} />
+      </IconBox>
       <h3 style={{ fontSize: 17, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: 0 }}>Performance Analytics</h3>
       <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.75, margin: 0 }}>
         Every campaign tracked with real data — impressions, clicks, conversions, and revenue. You pay only for confirmed results.
@@ -730,7 +741,9 @@ function SvcAnalytics({ style }: { style?: CSSProps }) {
 function SvcAffiliate({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.violet} style={style}>
-      <IconBox color={C.violet}>🤝</IconBox>
+      <IconBox color={C.violet}>
+        <Icon name="Collab" size={22} />
+      </IconBox>
       <h3 style={{ fontSize: 17, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: 0 }}>Affiliate Programs</h3>
       <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.75, margin: 0 }}>
         Long-term affiliate relationships with your best creators. Promo codes, tracked links, and tiered commissions — all on one platform.
@@ -753,7 +766,7 @@ function SvcHighlight({ style }: { style?: CSSProps }) {
       justifyContent: "center", textAlign: "center", gap: 16,
       ...style,
     }}>
-      <div style={{ fontSize: 44 }}>⚡</div>
+      <Icon name="spark" size={44} />
       <div>
         <p style={{ fontSize: 11, fontWeight: 700, color: C.inkDim, letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>
           Performance Only
@@ -775,19 +788,19 @@ function SvcHighlight({ style }: { style?: CSSProps }) {
 // ─────────────────────────────────────────────
 // 5. HOW IT WORKS
 // ─────────────────────────────────────────────
-interface Step { num: string; title: string; desc: string; icon: string; }
+interface Step { num: string; title: string; desc: string; iconName: string; }
 
 const BRAND_STEPS: Step[] = [
-  { num: "01", icon: "🎯", title: "Define Your Goals",      desc: "Tell us your product, target audience, and campaign goals. We build the strategy around what success looks like for you." },
-  { num: "02", icon: "🔍", title: "We Source Creators",     desc: "Our team hand-picks creators from our verified network that align with your brand values, niche, and audience demographics." },
-  { num: "03", icon: "📝", title: "Brief & Approve",        desc: "Review creator profiles and content briefs before anything goes live. Full approval control stays with your team." },
-  { num: "04", icon: "📈", title: "Track & Pay on Results", desc: "Content goes live, conversions are tracked in real-time. You pay only on confirmed sales, sign-ups, or agreed KPIs." },
+  { num: "01", iconName: "target",  title: "Define Your Goals",      desc: "Tell us your product, target audience, and campaign goals. We build the strategy around what success looks like for you." },
+  { num: "02", iconName: "search",  title: "We Source Creators",     desc: "Our team hand-picks creators from our verified network that align with your brand values, niche, and audience demographics." },
+  { num: "03", iconName: "pen",     title: "Brief & Approve",        desc: "Review creator profiles and content briefs before anything goes live. Full approval control stays with your team." },
+  { num: "04", iconName: "growth",  title: "Track & Pay on Results", desc: "Content goes live, conversions are tracked in real-time. You pay only on confirmed sales, sign-ups, or agreed KPIs." },
 ];
 const CREATOR_STEPS: Step[] = [
-  { num: "01", icon: "📋", title: "Apply & Get Verified",     desc: "Submit your profile. We review content quality, engagement authenticity, and audience composition — not just follower count." },
-  { num: "02", icon: "🎁", title: "Get Matched to Campaigns", desc: "Receive campaign invitations that match your niche and audience. You choose what to accept — no pressure, no lock-ins." },
-  { num: "03", icon: "✍️", title: "Create Authentic Content", desc: "Work within a creative brief that protects your voice. We give direction without killing your authenticity." },
-  { num: "04", icon: "💸", title: "Earn on Performance",      desc: "Get paid for actual results — clicks, codes used, or sales driven. The better you perform, the more you earn." },
+  { num: "01", iconName: "book",    title: "Apply & Get Verified",     desc: "Submit your profile. We review content quality, engagement authenticity, and audience composition — not just follower count." },
+  { num: "02", iconName: "notify",  title: "Get Matched to Campaigns", desc: "Receive campaign invitations that match your niche and audience. You choose what to accept — no pressure, no lock-ins." },
+  { num: "03", iconName: "approve", title: "Create Authentic Content", desc: "Work within a creative brief that protects your voice. We give direction without killing your authenticity." },
+  { num: "04", iconName: "Send",    title: "Earn on Performance",      desc: "Get paid for actual results — clicks, codes used, or sales driven. The better you perform, the more you earn." },
 ];
 
 function HowItWorks() {
@@ -839,9 +852,11 @@ function HowItWorks() {
             <div style={{
               width: 52, height: 52, borderRadius: "50%", background: C.grad,
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: 20, flexShrink: 0, boxShadow: "0 8px 20px rgba(124,85,255,0.22)",
+              flexShrink: 0, boxShadow: "0 8px 20px rgba(124,85,255,0.22)",
               marginBottom: isMobile ? 0 : 18,
-            }}>{step.icon}</div>
+            }}>
+              <Icon name={step.iconName} size={22} style={{ filter: "brightness(0) invert(1)" }} />
+            </div>
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: 11, fontWeight: 700, color: C.violet, letterSpacing: "0.12em", marginBottom: 5 }}>STEP {step.num}</p>
               <h3 style={{ fontSize: isMobile ? 15 : 14, fontWeight: 700, color: C.ink, letterSpacing: "-0.01em", marginBottom: 6, lineHeight: 1.3 }}>{step.title}</h3>
@@ -1067,7 +1082,7 @@ function WhyNexfluence() {
 
       {isMobile ? (
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-          <WhyPerformance /><WhyBaltic /><WhyQuality /><WhyTransparency /><WhyDataDriven /><WhyLongTerm /><WhyTestimonial />
+          <WhyPerformance /><WhyBaltic /><WhyQuality /><WhyTransparency /><WhyLongTerm /><WhyDataDriven /><WhyTestimonial />
         </div>
       ) : isTablet ? (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
@@ -1095,7 +1110,9 @@ function WhyNexfluence() {
 function WhyPerformance({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.violet} style={style}>
-      <IconBox color={C.violet}>⚡</IconBox>
+      <IconBox color={C.violet}>
+        <Icon name="spark" size={22} />
+      </IconBox>
       <h3 style={{ fontSize: 19, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: 0 }}>Pay Only for Results</h3>
       <p style={{ fontSize: 14, color: C.inkDim, lineHeight: 1.75, margin: 0 }}>
         Our performance-based pricing model means you're never paying for vanity metrics. Every spend is tied to a real business outcome — sales, sign-ups, or agreed KPIs.
@@ -1114,7 +1131,9 @@ function WhyBaltic({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.pink} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-        <IconBox color={C.pink}>🌍</IconBox>
+        <IconBox color={C.pink}>
+          <Icon name="globe" size={22} />
+        </IconBox>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 8px" }}>Baltic-Native Expertise</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.7, margin: 0 }}>
@@ -1123,7 +1142,7 @@ function WhyBaltic({ style }: { style?: CSSProps }) {
         </div>
       </div>
       <div style={{ display: "flex", gap: 7, flexWrap: "wrap" }}>
-        {["🇱🇻 Latvia", "🇱🇹 Lithuania", "🇪🇪 Estonia"].map((c) => (
+        {["Latvia", "Lithuania", "Estonia"].map((c) => (
           <span key={c} style={{ fontSize: 12, fontWeight: 600, padding: "5px 11px", borderRadius: 8, background: `${C.pink}0e`, color: C.ink, border: `1px solid ${C.pink}1c` }}>{c}</span>
         ))}
       </div>
@@ -1135,7 +1154,9 @@ function WhyQuality({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.indigo} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-        <IconBox color={C.indigo}>🎯</IconBox>
+        <IconBox color={C.indigo}>
+          <Icon name="quality" size={22} />
+        </IconBox>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 8px" }}>Audience Quality Over Quantity</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.7, margin: 0 }}>
@@ -1157,7 +1178,9 @@ function WhyTransparency({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.violet} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-        <IconBox color={C.violet}>🔗</IconBox>
+        <IconBox color={C.violet}>
+          <Icon name="link" size={22} />
+        </IconBox>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 8px" }}>One Platform, Full Transparency</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.7, margin: 0 }}>
@@ -1173,7 +1196,9 @@ function WhyLongTerm({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.pink} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 13 }}>
-        <IconBox color={C.pink}>♻️</IconBox>
+        <IconBox color={C.pink}>
+          <Icon name="cycle" size={22} />
+        </IconBox>
         <div>
           <h3 style={{ fontSize: 16, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 8px" }}>Built for Long-Term Value</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.7, margin: 0 }}>
@@ -1189,7 +1214,9 @@ function WhyDataDriven({ style }: { style?: CSSProps }) {
   return (
     <BentoCard accent={C.violet} style={style}>
       <div style={{ display: "flex", alignItems: "flex-start", gap: 18, flexWrap: "wrap" }}>
-        <IconBox color={C.violet}>🤖</IconBox>
+        <IconBox color={C.violet}>
+          <Icon name="targeted" size={22} />
+        </IconBox>
         <div style={{ flex: 1, minWidth: 180 }}>
           <h3 style={{ fontSize: 17, fontWeight: 800, color: C.ink, letterSpacing: "-0.02em", margin: "0 0 9px" }}>Data-Driven Matching</h3>
           <p style={{ fontSize: 13, color: C.inkDim, lineHeight: 1.75, margin: 0, maxWidth: 380 }}>
@@ -1412,27 +1439,5 @@ export default function ZonePage() {
  *   from { transform: translateX(0); }
  *   to   { transform: translateX(-50%); }
  * }
- * ═══════════════════════════════════════════════════════════════════
- *
- * ICON LIST FOR GRAPHICS TEAM
- * ═══════════════════════════════════════════════════════════════════
- * Drop SVGs in /public/icons/ and replace emoji with:
- *   <img src="/icons/[name].svg" width={N} height={N} alt="" />
- *
- * FILE NAME                   │ SECTION        │ SIZE  │ COLOUR   │ STYLE
- * ─────────────────────────────┼────────────────┼───────┼──────────┼────────
- * creator-discovery.svg       │ Services       │ 22×22 │ #7C55FF  │ Filled
- * campaign-management.svg     │ Services       │ 22×22 │ #FF33BC  │ Filled
- * performance-analytics.svg   │ Services       │ 22×22 │ #6A66FF  │ Filled
- * affiliate-programs.svg      │ Services       │ 22×22 │ #6A66FF  │ Filled
- * performance-pay.svg         │ Why section    │ 22×22 │ #7C55FF  │ Filled
- * baltic-native.svg           │ Why section    │ 22×22 │ #FF33BC  │ Filled
- * quality-over-quantity.svg   │ Why section    │ 22×22 │ #6A66FF  │ Filled
- * one-platform.svg            │ Why section    │ 22×22 │ #6A66FF  │ Filled
- * long-term-value.svg         │ Why section    │ 22×22 │ #FF33BC  │ Filled
- * data-driven-matching.svg    │ Why section    │ 22×22 │ #7C55FF  │ Filled
- *
- * All icons: solid filled, single-colour, no gradients in the SVG,
- * rounded corners (~20% of shape), designed on a 24×24 grid.
  * ═══════════════════════════════════════════════════════════════════
  */
