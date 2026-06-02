@@ -398,7 +398,7 @@ function Header() {
           <a href="/contact" onClick={() => setMenuOpen(false)} style={{
             fontSize: 15, fontWeight: 600, color: C.pink,
             textDecoration: "none", fontFamily: FONT,
-          }}>Contact Us →</a>
+          }}>Contact Us </a>
         </div>
       )}
     </header>
@@ -467,9 +467,9 @@ function ContactHero() {
           creator wanting to join our network — we'd love to hear from you.
         </p>
         <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-          <Btn href="#contact-form" variant="primary">Send a Message ↓</Btn>
-          <Btn href="mailto:hello@nexfluence.eu" variant="ghost">
-            hello@nexfluence.eu
+          <Btn href="#contact-form" variant="primary">Send a Message</Btn>
+          <Btn href="mailto:harshul@nexfluence.eu" variant="ghost">
+            harshul@nexfluence.eu
           </Btn>
         </div>
       </div>
@@ -585,13 +585,13 @@ function ContactFormSection() {
               </Field>
 
               <Field label="Subject">
-                <StyledInput name="subject" placeholder="How can we help?" required />
+                <StyledInput name="subject" placeholder="How can we help ?" required />
               </Field>
 
               <Field label="Message">
                 <StyledTextarea
                   name="message"
-                  placeholder="Tell us more about your project or request…"
+                  placeholder="Tell us more about your vision…"
                   required
                   rows={5}
                 />
@@ -603,7 +603,7 @@ function ContactFormSection() {
                 disabled={sending}
                 style={{ width: "100%", marginTop: 4 }}
               >
-                {sending ? "Sending…" : "Send Message →"}
+                {sending ? "Sending…" : "Send Message "}
               </Btn>
             </form>
           )}
@@ -620,29 +620,26 @@ function ContactFormSection() {
             iconName="email"
             title="Email Us"
             lines={[
-              "brands@nexfluence.eu",
-              "creators@nexfluence.eu",
-              "hello@nexfluence.eu",
+              "harshul@nexfluence.eu",
             ]}
             accent={C.violet}
           />
-          <InfoCard
+          {/* <InfoCard
             iconName="location"
             title="Visit Us"
             lines={[
-              "Brīvības iela 123",
-              "Riga, LV-1001",
-              "Latvia",
+              "Startup House Riga",
+              "Lastādijas iela 12-k-3, Latgales priekšpilsēta", "Rīga, LV-1050, Latvia",
             ]}
             accent={C.pink}
-          />
+          /> */}
           <InfoCard
             iconName="notify"
             title="Office Hours"
             lines={[
-              "Mon – Fri",
-              "10:00 – 18:00",
-              "Sat – Sun: Closed",
+              "Monday – Friday",
+              "10 Am – 06 Pm",
+              "Saturday – Sunday : Weekends But We Still Check Messages ! ",
             ]}
             accent={C.indigo}
           />
@@ -730,19 +727,26 @@ function VisitUs() {
         position: "relative", height: isMobile ? 240 : 400,
         background: C.bgSub,
       }}>
-        {/* Swap /contact-map.webp for a real static map image or an <iframe> embed */}
-        <Image
-          src="/contact-map.webp"
-          alt="Nexfluence office in Riga"
-          fill
-          style={{ objectFit: "cover" }}
+        {/* ── Google Maps embed ── */}
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2176.434082432957!2d24.114799576653905!3d56.94136387354728!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46eed10031e70b31%3A0x598c7b336df605c6!2sStartup%20House%20Riga!5e0!3m2!1sen!2sin!4v1780384893473!5m2!1sen!2sin"
+          style={{
+            position: "absolute", inset: 0,
+            width: "100%", height: "100%",
+            border: 0,
+          }}
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
         />
+
         {/* Overlay gradient for legibility */}
         <div style={{
           position: "absolute", inset: 0,
           background: "linear-gradient(to top, rgba(10,6,18,0.18) 0%, transparent 50%)",
           pointerEvents: "none",
         }} />
+
         {/* Location badge */}
         <div style={{
           position: "absolute",
@@ -754,6 +758,7 @@ function VisitUs() {
           border: "1px solid rgba(124,85,255,0.16)",
           boxShadow: C.shadowSm,
           maxWidth: isMobile ? 220 : 280,
+          zIndex: 1,
         }}>
           <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
             <Icon name="location" size={13} />
@@ -771,7 +776,6 @@ function VisitUs() {
     </section>
   );
 }
-
 // ─────────────────────────────────────────────
 // 5. FINAL CTA
 // ─────────────────────────────────────────────
@@ -815,7 +819,7 @@ function FinalCTA() {
           }}>
             Brands grow. Creators earn. Both win. Let's make it happen.
           </p>
-          <Btn href="mailto:hello@nexfluence.eu" variant="primary">Start Now →</Btn>
+          <Btn href="mailto:hello@nexfluence.eu" variant="primary">Start Now </Btn>
         </div>
       </div>
     </section>
